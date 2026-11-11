@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<title>Layar Sambutan</title>
+<title>Aksara — Layar Sambutan</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -18,41 +18,43 @@ button{font:inherit}
 </helmet>
 <div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; flex-wrap: wrap; background: #EFE7D6; font-family: Inter, system-ui, sans-serif; font-size: 13px; color: #2A2620">
 
-  <section style="flex: 1 1 520px; box-sizing: border-box; background: #1B1E2B; color: #E8E3D6; padding: 22px 56px 48px; display: flex; flex-direction: column">
-    <div aria-hidden="true" style="display: flex; gap: 8px; margin-left: -36px">
+  <section style="flex: 1 1 520px; box-sizing: border-box; background: #1B1E2B; color: #E8E3D6; padding: 22px 56px 48px; display: flex; flex-direction: column; position: relative; overflow: hidden">
+    <div aria-hidden="true" style="display: flex; gap: 8px; margin-left: -36px; position: relative">
       <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57"></span>
       <span style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E"></span>
       <span style="width: 12px; height: 12px; border-radius: 50%; background: #28C840"></span>
     </div>
 
-    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 36px; max-width: 440px; padding: 40px 0">
-      <div style="display: flex; flex-direction: column; gap: 18px">
-        <div aria-hidden="true" style="width: 72px; height: 72px; border-radius: 18px; background: #23273A; border: 1px solid #343950; display: flex; align-items: center; justify-content: center">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="{{gold}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3c-6 1-11 6-13 13l-2 5 5-2c7-2 12-7 13-13"/><path d="M8 16l4-4"/></svg>
+    <div style="flex: 1; position: relative; display: flex; flex-direction: column; justify-content: center; gap: 44px; width: 100%; max-width: 440px; padding: 40px 0">
+      <div style="display: flex; flex-direction: column">
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <h1 style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 96px; font-weight: 600; line-height: .9; letter-spacing: -.01em; color: #F2EDE1"><span style="color: {{gold}}">A</span>ksar<span style="position: relative; display: inline-block">a<img src="/_blob/23aa81ba57722bbb1bcd40da31ed0dd9" alt="" width="56" height="80" style="position: absolute; left: 16px; bottom: 54%; width: 56px; height: 80px; pointer-events: none"></span></h1>
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: .24em; color: {{gold}}">TEMPAT KISAH BERMULA</span>
+          <svg aria-hidden="true" width="96" height="10" viewBox="0 0 96 10" style="margin: 4px 0"><path d="M0 5h40M56 5h40" stroke="{{gold}}" stroke-opacity=".6" stroke-width="1"/><path d="M48 1l4 4-4 4-4-4z" fill="{{gold}}"/></svg>
+          <p style="margin: 0; color: #B4B6C6; font-size: 16px; line-height: 1.6; text-wrap: balance">Tulis naskah dan bangun dunia ceritamu, di satu meja.</p>
         </div>
-        <h1 style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 56px; font-weight: 600; line-height: 1">Novel Writer</h1>
-        <p style="margin: 0; color: #B4B6C6; font-size: 15px; line-height: 1.6">Tulis naskah, bangun dunia, dan simpan semuanya di Mac Anda.</p>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 10px">
         <a href="Baru.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; background: {{gold}}; color: #1B1E2B; text-decoration: none">
-          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
           <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Mulai novel baru</span><span style="font-size: 12px; color: #3A2E14">Buat proyek kosong atau dari template</span></span>
-          <kbd style="font-family: inherit; font-size: 11px; background: rgba(27,30,43,.12); border-radius: 4px; padding: 2px 6px">⌘N</kbd>
+          <kbd style="font-family: inherit; font-size: 11px; font-weight: 600; background: rgba(27,30,43,.18); color: #1B1E2B; border-radius: 5px; padding: 2px 7px">⌘N</kbd>
         </a>
         <button style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; border: 1px solid #343950; background: #23273A; color: #E8E3D6; text-align: left; cursor: pointer">
-          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
           <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Buka proyek</span><span style="font-size: 12px; color: #A3A6B8">Pilih folder novel yang sudah ada</span></span>
-          <kbd style="font-family: inherit; font-size: 11px; background: #2F3448; color: #C9CBD8; border-radius: 4px; padding: 2px 6px">⌘O</kbd>
+          <kbd style="font-family: inherit; font-size: 11px; font-weight: 600; background: #2F3448; color: #C9CBD8; border-radius: 5px; padding: 2px 7px">⌘O</kbd>
         </button>
         <button style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; border: 1px solid #343950; background: #23273A; color: #E8E3D6; text-align: left; cursor: pointer">
-          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
           <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Impor naskah</span><span style="font-size: 12px; color: #A3A6B8">Dari Word (.docx) atau Markdown</span></span>
+          <kbd style="font-family: inherit; font-size: 11px; font-weight: 600; background: #2F3448; color: #C9CBD8; border-radius: 5px; padding: 2px 7px">⇧⌘I</kbd>
         </button>
       </div>
     </div>
 
-    <span style="color: #8A8DA0; font-size: 12px">Versi 0.1 · Semua file tersimpan lokal</span>
+    <span style="position: relative; color: #8A8DA0; font-size: 12px">Versi 0.1 · Semua file tersimpan lokal</span>
   </section>
 
   <section style="flex: 1 1 560px; box-sizing: border-box; padding: 64px 56px 48px; display: flex; flex-direction: column; gap: 36px">

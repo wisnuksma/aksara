@@ -1,6 +1,6 @@
 # Aksara — Aplikasi Menulis Novel untuk Mac
 
-_(Sebelumnya bernama "Novel Writer"; nama aplikasi diganti menjadi **Aksara**. Seluruh teks antarmuka memakai nama Aksara.)_
+Nama aplikasi: **Aksara** (tagline: "Tulis naskah dan bangun dunia ceritamu, di satu meja."). Ikon aplikasi: monogram huruf "A" Cormorant Garamond warna emas `#C9A45C` di atas kotak biru tinta `#23273A`.
 
 Dokumen ini adalah spesifikasi utama proyek. Baca seluruhnya sebelum menulis kode.
 Pemilik proyek bukan programmer: jelaskan langkah dengan bahasa sederhana (Bahasa Indonesia),
@@ -155,3 +155,10 @@ Papan plot (corkboard), timeline peristiwa, peta relasi tokoh, peta dunia dengan
 - Commit Git setelah setiap fitur yang berfungsi.
 - Bila ada keputusan yang mengubah arah (misalnya ganti library), tanya dulu.
 - Jangan menambah fitur di luar fase yang sedang dikerjakan tanpa diminta.
+
+---
+
+## 7. Aset logo
+
+- `design-reference/pena-aksara.png`: ilustrasi pena bulu warna emas (latar transparan) yang diletakkan kecil di atas huruf "a" terakhir pada judul "Aksara" di layar sambutan (lihat `Welcome.dc.html`; di file itu gambar dirujuk sebagai `/_blob/...`, ganti dengan path aset lokal).
+- Gambar ini berasal dari template stok. Sebelum dipakai di luar pemakaian pribadi, pastikan lisensinya (atribusi/izin logo) sudah sesuai.

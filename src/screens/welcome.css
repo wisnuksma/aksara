@@ -8,6 +8,8 @@
 /* ---------- Kiri (gelap) ---------- */
 .welcome-left {
   flex: 1 1 520px;
+  position: relative;
+  overflow: hidden;
   background: var(--ink);
   color: var(--ink-text);
   padding: 48px 56px;
@@ -19,22 +21,33 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 36px;
+  gap: 44px;
+  width: 100%;
   max-width: 440px;
   padding: 40px 0;
 }
-.welcome-brand { display: flex; flex-direction: column; gap: 18px; }
-.welcome-logo {
-  width: 72px; height: 72px; border-radius: 18px;
-  background: var(--ink-card); border: 1px solid var(--ink-border);
-  display: flex; align-items: center; justify-content: center;
-}
+.welcome-brand { display: flex; flex-direction: column; gap: 12px; }
 .welcome-brand h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 56px; font-weight: 600; line-height: 1;
+  font-size: 96px; font-weight: 600; line-height: .9; letter-spacing: -.01em;
+  color: #F2EDE1;
 }
-.welcome-brand p { margin: 0; color: var(--ink-text-2); font-size: 15px; line-height: 1.6; }
+.brand-a { color: var(--gold); }
+.brand-last { position: relative; display: inline-block; }
+.brand-pen {
+  position: absolute; left: 16px; bottom: 54%;
+  width: 56px; height: 80px; object-fit: contain;
+  pointer-events: none; user-select: none;
+}
+.brand-kicker {
+  font-size: 11px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--gold);
+}
+.brand-ornament { margin: 4px 0; }
+.welcome-brand p {
+  margin: 0; color: var(--ink-text-2); font-size: 16px; line-height: 1.6; text-wrap: balance;
+}
 
 .welcome-actions { display: flex; flex-direction: column; gap: 10px; }
 .action {
@@ -53,13 +66,13 @@
 .action-title { font-weight: 600; font-size: 14px; }
 .action-desc { font-size: 12px; color: #A3A6B8; }
 .action kbd {
-  font-size: 11px; background: var(--ink-line-2); color: #C9CBD8;
-  border-radius: 4px; padding: 2px 6px;
+  font-size: 11px; font-weight: 600; background: var(--ink-line-2); color: #C9CBD8;
+  border-radius: 5px; padding: 2px 7px;
 }
 .action-primary { background: var(--gold); border-color: var(--gold); color: var(--ink); }
 .action-primary:hover { background: #D4B06A; border-color: #D4B06A; }
 .action-primary .action-desc { color: #3A2E14; }
-.action-primary kbd { background: rgba(27,30,43,.12); color: var(--ink); }
+.action-primary kbd { background: rgba(27,30,43,.18); color: var(--ink); }
 
 .welcome-footer { color: #8A8DA0; font-size: 12px; }
 
@@ -126,6 +139,7 @@
 
 @media (max-width: 640px) {
   .welcome-left, .welcome-right { padding: 32px 20px; }
-  .welcome-brand h1 { font-size: 44px; }
+  .welcome-brand h1 { font-size: 72px; }
+  .brand-pen { left: 12px; width: 42px; height: 60px; }
   .templates { grid-template-columns: 1fr; }
 }

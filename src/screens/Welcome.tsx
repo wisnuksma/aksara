@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { RecentProject } from '../lib/recent'
 import { formatNumber, timeAgo } from '../lib/recent'
+import pena from '../assets/pena-aksara.png'
 import './welcome.css'
 
 export type { Template } from '../lib/types'
@@ -35,27 +36,29 @@ export default function Welcome({ recent, onNew, onOpen, onImport, onOpenRecent 
       <section className="welcome-left">
         <div className="welcome-hero">
           <div className="welcome-brand">
-            <div className="welcome-logo" aria-hidden="true">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 3c-6 1-11 6-13 13l-2 5 5-2c7-2 12-7 13-13" /><path d="M8 16l4-4" /></svg>
-            </div>
-            <h1>Aksara</h1>
-            <p>Tulis naskah, bangun dunia, dan simpan semuanya di Mac Anda.</p>
+            <h1>
+              <span className="brand-a">A</span>ksar<span className="brand-last">a<img src={pena} alt="" className="brand-pen" /></span>
+            </h1>
+            <span className="brand-kicker">Tempat kisah bermula</span>
+            <svg className="brand-ornament" aria-hidden="true" width="96" height="10" viewBox="0 0 96 10"><path d="M0 5h40M56 5h40" stroke="var(--gold)" strokeOpacity=".6" strokeWidth="1" /><path d="M48 1l4 4-4 4-4-4z" fill="var(--gold)" /></svg>
+            <p>Tulis naskah dan bangun dunia ceritamu, di satu meja.</p>
           </div>
 
           <div className="welcome-actions">
             <button className="action action-primary" onClick={() => onNew()}>
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
               <span className="action-text"><span className="action-title">Mulai novel baru</span><span className="action-desc">Buat proyek kosong atau dari template</span></span>
               <kbd>⌘N</kbd>
             </button>
             <button className="action" onClick={onOpen}>
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
               <span className="action-text"><span className="action-title">Buka proyek</span><span className="action-desc">Pilih folder novel yang sudah ada</span></span>
               <kbd>⌘O</kbd>
             </button>
             <button className="action" onClick={onImport}>
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
               <span className="action-text"><span className="action-title">Impor naskah</span><span className="action-desc">Dari Word (.docx) atau Markdown</span></span>
+              <kbd>⇧⌘I</kbd>
             </button>
           </div>
         </div>

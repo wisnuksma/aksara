@@ -29,17 +29,21 @@ export default function App() {
     setToast('Impor naskah (.docx / Markdown) termasuk Fase 2.')
   }, [])
 
-  // Pintasan keyboard: ⌘N (Ctrl+N di Windows) dan ⌘O.
+  // Pintasan keyboard: ⌘N, ⌘O, ⇧⌘I (Ctrl di Windows).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (!(e.metaKey || e.ctrlKey) || e.shiftKey || e.altKey) return
+      if (!(e.metaKey || e.ctrlKey) || e.altKey) return
       const k = e.key.toLowerCase()
+      if (e.shiftKey) {
+        if (k === 'i') { e.preventDefault(); handleImport() }
+        return
+      }
       if (k === 'n') { e.preventDefault(); handleNew() }
       else if (k === 'o') { e.preventDefault(); handleOpen() }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [handleNew, handleOpen])
+  }, [handleNew, handleOpen, handleImport])
 
   return (
     <>
