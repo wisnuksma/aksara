@@ -3,7 +3,8 @@ import type { RecentProject } from '../lib/recent'
 import { formatNumber, timeAgo } from '../lib/recent'
 import './welcome.css'
 
-export type Template = 'kosong' | 'tiga-babak' | 'fantasi-epik'
+export type { Template } from '../lib/types'
+import type { Template } from '../lib/types'
 
 interface Props {
   recent: RecentProject[]

@@ -1,25 +1,27 @@
 import { useCallback, useEffect, useState } from 'react'
-import Welcome, { type Template } from './screens/Welcome'
-import { listRecent, type RecentProject } from './lib/recent'
+import Welcome from './screens/Welcome'
+import NewNovelDialog from './screens/NewNovelDialog'
+import { listRecent, rememberProject, type RecentProject } from './lib/recent'
+import type { Template } from './lib/types'
 
 export default function App() {
   const [recent, setRecent] = useState<RecentProject[]>([])
   const [toast, setToast] = useState<string | null>(null)
+  // null = dialog tertutup; selain itu = template yang dipilih di awal
+  const [newDialog, setNewDialog] = useState<Template | null>(null)
 
-  useEffect(() => {
+  const refreshRecent = useCallback(() => {
     listRecent().then(setRecent).catch(() => setRecent([]))
   }, [])
+  useEffect(refreshRecent, [refreshRecent])
 
   useEffect(() => {
     if (!toast) return
-    const t = setTimeout(() => setToast(null), 2800)
+    const t = setTimeout(() => setToast(null), 3500)
     return () => clearTimeout(t)
   }, [toast])
 
-  // Sementara: tombol-tombol ini akan diisi pada langkah berikutnya.
-  const handleNew = useCallback((template?: Template) => {
-    setToast(`Dialog novel baru${template ? ` (template: ${template})` : ''} dibuat di langkah 2.`)
-  }, [])
+  const handleNew = useCallback((template?: Template) => setNewDialog(template ?? 'kosong'), [])
   const handleOpen = useCallback(() => {
     setToast('Buka proyek akan aktif setelah ruang kerja siap (langkah 3).')
   }, [])
@@ -41,6 +43,7 @@ export default function App() {
 
   return (
     <>
+      <div className="screen" inert={newDialog !== null}>
       <Welcome
         recent={recent}
         onNew={handleNew}
@@ -48,6 +51,23 @@ export default function App() {
         onImport={handleImport}
         onOpenRecent={() => handleOpen()}
       />
+      </div>
+      {newDialog && (
+        <NewNovelDialog
+          key={newDialog}
+          initialTemplate={newDialog}
+          onCancel={() => setNewDialog(null)}
+          onCreated={async ({ root, project, folder, parent }) => {
+            setNewDialog(null)
+            await rememberProject({
+              id: project.id, title: project.judul, genre: project.genre,
+              words: 0, lastOpened: new Date().toISOString(), handle: root,
+            }).catch(() => {})
+            refreshRecent()
+            setToast(`Novel "${project.judul}" dibuat di folder ${parent}/${folder}/`)
+          }}
+        />
+      )}
       {toast && <div className="toast" role="status">{toast}</div>}
     </>
   )

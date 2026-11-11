@@ -1,0 +1,85 @@
+.dialog-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(18, 20, 29, .62);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; overflow-y: auto;
+  animation: fade .15s ease-out;
+}
+@keyframes fade { from { opacity: 0 } }
+.dialog {
+  width: 100%; max-width: 620px; margin: auto;
+  background: var(--paper); color: var(--text);
+  border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.45);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.dialog-head { padding: 28px 32px 8px; display: flex; flex-direction: column; gap: 6px; }
+.dialog-head h1 { margin: 0; font-family: var(--font-display); font-size: 34px; font-weight: 600; }
+.dialog-head p { margin: 0; color: var(--text-3); }
+.dialog-body { padding: 20px 32px; display: flex; flex-direction: column; gap: 20px; }
+.dialog-foot {
+  padding: 18px 32px; border-top: 1px solid #EDE4D0; background: #FBF6EC;
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+.field { display: flex; flex-direction: column; gap: 8px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.field-row > .field { flex: 1 1 220px; }
+.field-label { font-weight: 600; padding: 0; }
+legend.field-label { margin-bottom: 8px; }
+.field-row { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.input {
+  height: 42px; padding: 0 14px; width: 100%;
+  border: 1px solid var(--line-2); border-radius: 10px;
+  background: #FFFFFF; color: var(--text); font: inherit; outline: none;
+}
+select.input { padding: 0 12px; }
+.input:focus { border-color: var(--gold-text); box-shadow: 0 0 0 3px rgba(201,164,92,.25); }
+.input-serif { font-family: var(--font-text); font-size: 16px; }
+.input::placeholder { color: #A89E8A; }
+
+.choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.choice {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 14px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line-2); background: #FFFFFF;
+  /* border 2px saat dipilih tanpa menggeser isi */
+  outline: 1px solid transparent;
+}
+.choice.is-selected { border-color: var(--gold-text); outline-color: var(--gold-text); background: var(--panel); }
+.choice:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(201,164,92,.35); }
+.choice-name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.choice-name input { accent-color: var(--gold-text); margin: 0; }
+.choice-desc { color: var(--text-3); font-size: 12px; line-height: 1.5; }
+
+.location {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; background: var(--panel);
+}
+.location-path {
+  flex: 1; min-width: 0; color: var(--text-2);
+  font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hint { color: var(--text-3); font-size: 12px; }
+
+.dialog-error {
+  margin: 0; padding: 10px 12px; border-radius: 10px;
+  background: #F6E1DC; color: #8E2C22; line-height: 1.5;
+}
+
+.btn {
+  height: 40px; padding: 0 18px; border-radius: 10px;
+  border: 1px solid var(--line-2); background: transparent; color: var(--text);
+  cursor: pointer; font-weight: 500;
+}
+.btn:hover:not(:disabled) { background: var(--panel); }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn-small { height: auto; padding: 5px 10px; border-radius: 7px; background: var(--paper); font-weight: 400; }
+.btn-primary { background: var(--ink); border-color: var(--ink); color: #F0DDB3; font-weight: 600; padding: 0 20px; }
+.btn-primary:hover:not(:disabled) { background: #272B3D; }
+
+@media (max-width: 560px) {
+  .dialog-head, .dialog-body, .dialog-foot { padding-left: 20px; padding-right: 20px; }
+  .choices { grid-template-columns: 1fr; }
+}
