@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { get, set } from 'idb-keyval'
 import Editor from '../components/Editor'
+import Binder from '../components/Binder'
+import * as ops from '../lib/binderOps'
 import { saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
 import { loadStats, saveStats, todayKey, type Stats } from '../lib/stats'
 import { formatNumber, rememberProject } from '../lib/recent'
@@ -32,6 +34,11 @@ export default function Workspace({ project, onClose }: Props) {
   const [showLeft, setShowLeft] = useState(true)
   const [showRight, setShowRight] = useState(true)
   const [tab, setTab] = useState<Tab>('catatan')
+  const [editing, setEditing] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
+  const [, setVersion] = useState(0)
+  const bump = () => setVersion((v) => v + 1)
 
   // Isi editor aktif diambil lewat fungsi ini saat menyimpan.
   const getBody = useRef<(() => string) | null>(null)
@@ -131,9 +138,7 @@ export default function Workspace({ project, onClose }: Props) {
     const id = sceneId(c, s)
     if (id === activeId) return
     flush()
-    getBody.current = null
-    setActiveId(id)
-    set(`last-scene:${p.data.id}`, id).catch(() => {})
+    selectScene(c, s)
   }
 
   function toggleChapter(c: Chapter) {
@@ -142,6 +147,65 @@ export default function Workspace({ project, onClose }: Props) {
       if (next.has(c.folder)) next.delete(c.folder); else next.add(c.folder)
       return next
     })
+  }
+
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(null), 4000)
+    return () => clearTimeout(t)
+  }, [toast])
+
+  /** Jalankan perubahan binder: simpan dulu yang tertunda, lalu ubah file. */
+  async function change(what: string, fn: () => Promise<void>) {
+    if (busy) return
+    setBusy(true)
+    try {
+      await flush()
+      await fn()
+    } catch (e) {
+      console.error(e)
+      setToast(`Gagal ${what}. Tidak ada file yang hilang — coba lagi.`)
+    } finally {
+      setBusy(false)
+      bump()
+    }
+  }
+
+  const expand = (c: Chapter) => setExpanded((prev) => new Set(prev).add(c.folder))
+
+  function selectScene(c: Chapter, s: Scene) {
+    getBody.current = null
+    const id = sceneId(c, s)
+    setActiveId(id)
+    set(`last-scene:${p.data.id}`, id).catch(() => {})
+  }
+
+  const actions = {
+    openScene,
+    toggleChapter,
+    addChapter: () => change('menambah bab', async () => {
+      const c = await ops.addChapter(p, 'Bab baru')
+      expand(c)
+      selectScene(c, c.scenes[0])
+      setEditing(`ch:${c.folder}`)
+    }),
+    addScene: (c: Chapter) => change('menambah adegan', async () => {
+      const s = await ops.addScene(p, c, `Adegan ${c.scenes.length + 1}`)
+      expand(c)
+      selectScene(c, s)
+      setEditing(`sc:${sceneId(c, s)}`)
+    }),
+    renameChapter: (c: Chapter, judul: string) => change('mengubah nama bab', () => ops.renameChapter(p, c, judul)),
+    renameScene: (c: Chapter, s: Scene, judul: string) => change('mengubah nama adegan', () => ops.renameScene(p, c, s, judul)),
+    moveChapter: (from: number, to: number) => {
+      if (to < 0 || to >= p.chapters.length) return
+      change('memindahkan bab', () => ops.moveChapter(p, from, to))
+    },
+    moveScene: (src: Chapter, s: Scene, dst: Chapter, index: number) => change('memindahkan adegan', async () => {
+      const wasActive = sceneId(src, s) === activeId
+      await ops.moveScene(p, src, s, dst, index)
+      if (wasActive) { selectScene(dst, s); expand(dst) }
+    }),
   }
 
   async function close() {
@@ -161,7 +225,6 @@ export default function Workspace({ project, onClose }: Props) {
   const total = totalWords(p)
   const today = Math.max(0, stats.harian[todayKey()] ?? 0)
   const dailyTarget = p.data.target_harian || 0
-  const perChapterTarget = p.data.target_kata && p.chapters.length ? p.data.target_kata / p.chapters.length : 0
 
 
   return (
@@ -200,43 +263,8 @@ export default function Workspace({ project, onClose }: Props) {
       <div className="ws-body">
         {showLeft && (
           <nav className="binder" aria-label="Binder">
-            <div className="binder-section">
-              <span className="binder-label">Naskah</span>
-              {p.chapters.map((c) => {
-                const open = expanded.has(c.folder)
-                const isActiveChapter = active?.chapter === c
-                const w = chapterWords(c)
-                return (
-                  <div key={c.folder} className={'chapter' + (open ? ' is-open' : '') + (isActiveChapter ? ' is-current' : '')}>
-                    <button className="chapter-head" onClick={() => toggleChapter(c)} aria-expanded={open}>
-                      <span className="chapter-name">{c.judul}</span>
-                      <span className="chapter-words">{w ? formatNumber(w) : '—'}</span>
-                    </button>
-                    {open && perChapterTarget > 0 && (
-                      <span className="chapter-progress" aria-hidden="true" title="Kemajuan menuju target kata bab ini">
-                        <span style={{ width: `${Math.min(100, (w / perChapterTarget) * 100)}%` }} />
-                      </span>
-                    )}
-                    {open && (
-                      <ul className="scene-list">
-                        {c.scenes.map((s) => {
-                          const id = sceneId(c, s)
-                          return (
-                            <li key={s.file}>
-                              <button className={'scene' + (id === activeId ? ' is-active' : '')} onClick={() => openScene(c, s)}
-                                aria-current={id === activeId ? 'page' : undefined}>
-                                {String(s.meta.judul || s.file)}
-                              </button>
-                            </li>
-                          )
-                        })}
-                        {c.scenes.length === 0 && <li className="scene-empty">Belum ada adegan</li>}
-                      </ul>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
+            <Binder project={p} activeId={activeId} expanded={expanded}
+              editing={editing} setEditing={setEditing} busy={busy} {...actions} />
 
             <div className="daily">
               <Ring value={dailyTarget ? today / dailyTarget : 0} />
@@ -257,6 +285,7 @@ export default function Workspace({ project, onClose }: Props) {
                 heading={`Bab ${chapterIndex + 1} · Adegan ${sceneIndex + 1}`}
                 title={String(active.scene.meta.judul || 'Tanpa judul')}
                 zoom={zoom}
+                autoFocus={!editing}
                 onZoom={changeZoom}
                 onChange={onChange}
                 onReady={onReady}
@@ -311,6 +340,7 @@ export default function Workspace({ project, onClose }: Props) {
           )}
         </main>
       </div>
+      {toast && <div className="toast" role="alert">{toast}</div>}
     </div>
   )
 }

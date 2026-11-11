@@ -11,6 +11,8 @@ interface Props {
   heading: string       // "Bab 1 · Adegan 2"
   title: string         // judul adegan
   zoom: number
+  /** Taruh kursor di akhir naskah saat dibuka (default ya). */
+  autoFocus?: boolean
   onZoom: (z: number) => void
   /** Dipanggil setiap isi berubah, dengan jumlah kata terbaru. */
   onChange: (words: number) => void
@@ -20,12 +22,12 @@ interface Props {
 
 export const editorWords = (e: TEditor) => countWords(e.getText({ blockSeparator: '\n' }))
 
-export default function Editor({ markdown, heading, title, zoom, onZoom, onChange, onReady }: Props) {
+export default function Editor({ markdown, heading, title, zoom, autoFocus = true, onZoom, onChange, onReady }: Props) {
   const editor = useEditor({
     extensions: [...editorExtensions, Placeholder.configure({ placeholder: 'Mulai menulis di sini…' })],
     content: markdown,
     contentType: 'markdown',
-    autofocus: 'end',
+    autofocus: autoFocus ? 'end' : false,
     editorProps: { attributes: { class: 'manuscript', spellcheck: 'true', lang: 'id', 'aria-label': `Naskah: ${title}` } },
     onUpdate: ({ editor }) => onChange(editorWords(editor)),
   })
