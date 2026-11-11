@@ -3,6 +3,7 @@ import { get, set } from 'idb-keyval'
 import { createProject, FolderExistsError } from '../lib/createProject'
 import { ensurePermission, folderName, fsSupported } from '../lib/fs'
 import type { ProjectFile, Template } from '../lib/types'
+import Select from '../components/Select'
 import './dialog.css'
 
 const GENRES = ['Fantasi', 'Romansa', 'Misteri', 'Fiksi ilmiah', 'Drama', 'Lainnya']
@@ -115,12 +116,10 @@ export default function NewNovelDialog({ initialTemplate = 'kosong', onCancel, o
           </label>
 
           <div className="field-row">
-            <label className="field">
-              <span className="field-label">Genre</span>
-              <select className="input" value={genre} onChange={(e) => setGenre(e.target.value)}>
-                {GENRES.map((g) => <option key={g}>{g}</option>)}
-              </select>
-            </label>
+            <div className="field">
+              <span className="field-label" id="nn-genre">Genre</span>
+              <Select value={genre} options={GENRES} onChange={setGenre} aria-labelledby="nn-genre" />
+            </div>
             <label className="field">
               <span className="field-label">Target kata</span>
               <input className="input" inputMode="numeric" placeholder="mis. 80.000"

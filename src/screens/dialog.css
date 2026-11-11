@@ -32,7 +32,6 @@ legend.field-label { margin-bottom: 8px; }
   border: 1px solid var(--line-2); border-radius: 10px;
   background: #FFFFFF; color: var(--text); font: inherit; outline: none;
 }
-select.input { padding: 0 12px; }
 .input:focus { border-color: var(--gold-text); box-shadow: 0 0 0 3px rgba(201,164,92,.25); }
 .input-serif { font-family: var(--font-text); font-size: 16px; }
 .input::placeholder { color: #A89E8A; }
