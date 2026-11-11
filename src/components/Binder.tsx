@@ -174,7 +174,7 @@ export default function Binder(props: Props) {
         )
       })}
       <button className="binder-add" onClick={props.addChapter} disabled={busy}>
-        <Plus /> Bab baru
+        <Plus /> Tambah bab
       </button>
     </div>
   )

@@ -114,3 +114,74 @@
 @media (max-width: 800px) {
   .ws-modes { display: none; }
 }
+
+/* ---------- Langkah 4: keadaan kosong ---------- */
+.ws-novel.is-untitled { color: #A3A6B8; }
+
+.daily { position: relative; }
+.daily-label {
+  border: 0; background: none; padding: 0; text-align: left; cursor: pointer;
+  color: var(--ink-text-3); font-size: 12px; font: inherit; font-size: 12px;
+}
+.daily-label:hover, .daily-label.is-link { color: var(--gold); }
+.daily-label:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+.target-pop {
+  position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 30;
+  padding: 14px; border-radius: 12px;
+  background: var(--paper); color: var(--text); border: 1px solid var(--line-2);
+  box-shadow: 0 14px 36px rgba(0,0,0,.35);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.target-pop label { font-weight: 600; }
+.target-row { display: flex; gap: 6px; }
+.target-row input {
+  flex: 1; min-width: 0; height: 34px; padding: 0 10px; border-radius: 8px;
+  border: 1px solid var(--line-2); background: #fff; color: var(--text); font: inherit; outline: none;
+}
+.target-row input:focus { border-color: var(--gold-text); }
+.target-row button {
+  height: 34px; padding: 0 12px; border: 0; border-radius: 8px; cursor: pointer;
+  background: var(--ink); color: #F0DDB3; font: inherit; font-weight: 600;
+}
+.target-hint { font-size: 11px; color: var(--text-3); }
+
+.ws-noscene { flex-direction: column; gap: 10px; text-align: center; }
+.ws-noscene-title { font-family: var(--font-text); font-size: 20px; font-weight: 500; color: var(--text); }
+.ws-noscene .btn { margin-top: 8px; }
+
+.side-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding-top: 18px; }
+.side-empty-icon {
+  width: 52px; height: 52px; border-radius: 16px; background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+}
+.side-empty-title { font-family: var(--font-text); font-size: 18px; font-weight: 500; color: var(--text); }
+.side-empty-text { color: var(--text-3); line-height: 1.55; max-width: 270px; }
+.side-tips {
+  list-style: none; margin: 10px 0 0; padding: 0; width: 100%;
+  display: flex; flex-direction: column; gap: 8px; text-align: left;
+}
+.side-tips li {
+  padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--paper); color: var(--text-2); line-height: 1.5;
+}
+.side-tips b { color: var(--text); font-weight: 600; }
+.side-tips kbd, .focus-pill kbd { background: var(--line); color: var(--text); border-radius: 4px; padding: 0 5px; font-size: 11px; }
+.side-soon { margin: 6px 0 0; color: var(--text-3); font-size: 12px; line-height: 1.5; }
+
+/* ---------- Mode fokus ---------- */
+.ws.is-focus { background: var(--desk); }
+.ws.is-focus .ws-main { margin: 0; border-radius: 0; }
+.focus-pill {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 40;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px 6px 14px; border-radius: 999px;
+  background: rgba(247, 241, 228, .92); border: 1px solid var(--line);
+  color: var(--text-3); font-size: 12px; box-shadow: 0 6px 20px rgba(42,38,32,.08);
+  opacity: .55; transition: opacity .2s;
+}
+.focus-pill:hover, .focus-pill:focus-within { opacity: 1; }
+.focus-pill button {
+  border: 0; background: transparent; color: var(--text-2); cursor: pointer; font: inherit; font-size: 12px;
+  padding: 4px 8px; border-radius: 999px; display: flex; align-items: center; gap: 6px;
+}
+.focus-pill button:hover { background: var(--line); }

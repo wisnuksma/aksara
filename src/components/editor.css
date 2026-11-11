@@ -81,3 +81,24 @@
   content: '*   *   *'; white-space: pre; color: var(--gold-text); letter-spacing: .2em;
 }
 .manuscript hr.ProseMirror-selectednode::after { background: rgba(201,164,92,.25); border-radius: 4px; }
+
+/* Judul adegan yang bisa diketik */
+textarea.page-title {
+  display: block; width: 100%; resize: none; overflow: hidden;
+  border: 0; outline: none; padding: 0; background: transparent; color: var(--text);
+  border-radius: 4px;
+}
+textarea.page-title::placeholder { color: #A39C8C; }
+textarea.page-title:hover { box-shadow: 0 0 0 6px rgba(201,164,92,.08); background: rgba(201,164,92,.08); }
+textarea.page-title:focus { box-shadow: none; background: transparent; }
+
+/* Petunjuk pintasan di bawah halaman kosong */
+.page-scroller { flex-direction: column; align-items: center; justify-content: flex-start; gap: 20px; }
+.page-hints { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; color: var(--text-3); font-size: 12px; }
+.page-hints kbd { background: var(--line); color: var(--text); border-radius: 4px; padding: 1px 6px; font-size: 11px; }
+
+/* Mode fokus: paragraf yang sedang ditulis terang, lainnya redup */
+.is-focus .page-scroller { padding-top: 48px; }
+.is-focus .manuscript > * { transition: opacity .2s; opacity: .28; }
+.is-focus .manuscript > .has-focus, .is-focus .manuscript > hr { opacity: 1; }
+.is-focus .manuscript:not(.ProseMirror-focused) > * { opacity: 1; }

@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { EditorContent, useEditor, useEditorState, type Editor as TEditor } from '@tiptap/react'
-import { Placeholder } from '@tiptap/extensions'
+import { Focus, Placeholder } from '@tiptap/extensions'
 import { editorExtensions } from '../lib/editorExtensions'
 import { countWords } from '../lib/words'
 import Select from './Select'
@@ -9,8 +9,12 @@ import './editor.css'
 interface Props {
   markdown: string
   heading: string       // "Bab 1 · Adegan 2"
-  title: string         // judul adegan
+  title: string         // judul adegan (bisa diubah di halaman)
   zoom: number
+  /** Mode fokus: toolbar disembunyikan, paragraf lain diredupkan. */
+  focusMode?: boolean
+  /** Simpan judul adegan baru (diketik langsung di halaman). */
+  onRename: (title: string) => void
   /** Taruh kursor di akhir naskah saat dibuka (default ya). */
   autoFocus?: boolean
   onZoom: (z: number) => void
@@ -22,31 +26,69 @@ interface Props {
 
 export const editorWords = (e: TEditor) => countWords(e.getText({ blockSeparator: '\n' }))
 
-export default function Editor({ markdown, heading, title, zoom, autoFocus = true, onZoom, onChange, onReady }: Props) {
+export default function Editor({ markdown, heading, title, zoom, focusMode = false, autoFocus = true, onZoom, onChange, onRename, onReady }: Props) {
   const editor = useEditor({
-    extensions: [...editorExtensions, Placeholder.configure({ placeholder: 'Mulai menulis di sini…' })],
+    extensions: [
+      ...editorExtensions,
+      Placeholder.configure({ placeholder: 'Mulai menulis di sini…' }),
+      Focus.configure({ className: 'has-focus', mode: 'shallowest' }),
+    ],
     content: markdown,
     contentType: 'markdown',
     autofocus: autoFocus ? 'end' : false,
     editorProps: { attributes: { class: 'manuscript', spellcheck: 'true', lang: 'id', 'aria-label': `Naskah: ${title}` } },
-    onUpdate: ({ editor }) => onChange(editorWords(editor)),
+    onUpdate: ({ editor }) => { const w = editorWords(editor); setEmpty(w === 0); onChange(w) },
   })
+  const [empty, setEmpty] = useState(() => !markdown.trim())
 
   useEffect(() => {
     if (editor) onReady(() => editor.getMarkdown())
   }, [editor, onReady])
 
   return (
-    <div className="editor-column">
-      {editor && <Toolbar editor={editor} zoom={zoom} onZoom={onZoom} />}
+    <div className={'editor-column' + (focusMode ? ' is-focus' : '')}>
+      {editor && !focusMode && <Toolbar editor={editor} zoom={zoom} onZoom={onZoom} />}
       <div className="page-scroller">
         <article className="page" style={{ zoom: zoom / 100 }}>
           <span className="page-heading">{heading}</span>
-          <h1 className="page-title">{title}</h1>
+          <TitleInput value={title} onRename={onRename} onEnter={() => editor?.commands.focus('start')} />
           <EditorContent editor={editor} />
         </article>
+        {empty && !focusMode && (
+          <div className="page-hints" aria-label="Pintasan">
+            <span><kbd>⌘N</kbd> adegan baru</span>
+            <span><kbd>⌘.</kbd> mode fokus</span>
+            <span><kbd>---</kbd> pemisah adegan</span>
+          </div>
+        )}
       </div>
     </div>
+  )
+}
+
+/** Judul adegan yang bisa diketik langsung di halaman. */
+function TitleInput({ value, onRename, onEnter }: { value: string; onRename: (t: string) => void; onEnter: () => void }) {
+  const [v, setV] = useState(value)
+  const ref = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => setV(value), [value])
+  // Tinggi menyesuaikan isi (judul panjang turun ke baris berikutnya)
+  useEffect(() => {
+    const el = ref.current
+    if (el) { el.style.height = '0'; el.style.height = el.scrollHeight + 'px' }
+  }, [v])
+  const commit = () => {
+    const t = v.replace(/\s+/g, ' ').trim()
+    if (!t) { setV(value); return }
+    if (t !== value) onRename(t)
+  }
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); onEnter() }
+    if (e.key === 'Escape') { e.preventDefault(); setV(value); ref.current?.blur() }
+  }
+  return (
+    <textarea ref={ref} className="page-title" rows={1} value={v} placeholder="Judul adegan" aria-label="Judul adegan"
+      maxLength={120} spellCheck={false}
+      onChange={(e) => setV(e.target.value.replace(/\n/g, ' '))} onBlur={commit} onKeyDown={onKey} />
   )
 }
 

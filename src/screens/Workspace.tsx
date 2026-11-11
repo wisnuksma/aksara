@@ -5,6 +5,7 @@ import Binder from '../components/Binder'
 import * as ops from '../lib/binderOps'
 import { chapterLabel, nextChapterTitle, saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
 import { loadStats, saveStats, todayKey, type Stats } from '../lib/stats'
+import { saveProjectFile } from '../lib/project'
 import { formatNumber, rememberProject } from '../lib/recent'
 import './workspace.css'
 
@@ -33,7 +34,9 @@ export default function Workspace({ project, onClose }: Props) {
   const [zoom, setZoom] = useState(readZoom)
   const [showLeft, setShowLeft] = useState(true)
   const [showRight, setShowRight] = useState(true)
-  const [tab, setTab] = useState<Tab>('catatan')
+  const [tab, setTab] = useState<Tab>(() => (totalWords(project) === 0 ? 'asisten' : 'catatan'))
+  const [focusMode, setFocusMode] = useState(false)
+  const [targetOpen, setTargetOpen] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -47,6 +50,10 @@ export default function Workspace({ project, onClose }: Props) {
   const chain = useRef<Promise<void>>(Promise.resolve())
   const statsRef = useRef(stats)
   statsRef.current = stats
+  const activeIdRef = useRef(activeId)
+  activeIdRef.current = activeId
+  const focusRef = useRef(focusMode)
+  focusRef.current = focusMode
 
   const find = useCallback((id: string | null) => {
     for (const c of p.chapters) for (const s of c.scenes) if (sceneId(c, s) === id) return { chapter: c, scene: s }
@@ -128,11 +135,20 @@ export default function Workspace({ project, onClose }: Props) {
   // ⌘S = simpan sekarang (kebiasaan), walau sudah otomatis
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 's') { e.preventDefault(); flush() }
+      const mod = (e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey
+      const k = e.key.toLowerCase()
+      if (mod && k === 's') { e.preventDefault(); flush() }
+      else if (mod && e.key === '.') { e.preventDefault(); setFocusMode((f) => !f) }
+      else if (mod && k === 'n') {
+        e.preventDefault()
+        const c = find(activeIdRef.current)?.chapter ?? p.chapters[p.chapters.length - 1]
+        if (c) actionsRef.current.addScene(c); else actionsRef.current.addChapter()
+      }
+      else if (e.key === 'Escape' && focusRef.current) { setFocusMode(false) }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [flush])
+  }, [flush, find, p])
 
   function openScene(c: Chapter, s: Scene) {
     const id = sceneId(c, s)
@@ -208,6 +224,15 @@ export default function Workspace({ project, onClose }: Props) {
     }),
   }
 
+  const actionsRef = useRef(actions)
+  actionsRef.current = actions
+
+  async function setDailyTarget(n: number) {
+    p.data.target_harian = n
+    setTargetOpen(false)
+    await change('menyimpan target harian', () => saveProjectFile(p))
+  }
+
   async function close() {
     await flush()
     onClose()
@@ -227,14 +252,15 @@ export default function Workspace({ project, onClose }: Props) {
 
 
   return (
-    <div className="ws">
+    <div className={'ws' + (focusMode ? ' is-focus' : '')}>
+      {!focusMode && (
       <header className="ws-header">
         <button className="ws-icon-btn ws-back" onClick={close} aria-label="Kembali ke layar sambutan" title="Kembali ke layar sambutan">
           <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
         </button>
         <div className="ws-title">
           <span className="ws-monogram" aria-hidden="true">A</span>
-          <span className="ws-novel">{p.data.judul}</span>
+          <span className={'ws-novel' + (p.data.judul === 'Novel tanpa judul' ? ' is-untitled' : '')}>{p.data.judul}</span>
         </div>
         <div className="ws-spacer" />
         <div className="ws-modes" role="group" aria-label="Mode kerja">
@@ -258,9 +284,10 @@ export default function Workspace({ project, onClose }: Props) {
           </button>
         </div>
       </header>
+      )}
 
       <div className="ws-body">
-        {showLeft && (
+        {showLeft && !focusMode && (
           <nav className="binder" aria-label="Binder">
             <Binder project={p} activeId={activeId} expanded={expanded}
               editing={editing} setEditing={setEditing} busy={busy} {...actions} />
@@ -269,8 +296,12 @@ export default function Workspace({ project, onClose }: Props) {
               <Ring value={dailyTarget ? today / dailyTarget : 0} />
               <div className="daily-text">
                 <span className="daily-count">{formatNumber(today)}{dailyTarget ? ` / ${formatNumber(dailyTarget)}` : ''} kata</span>
-                <span className="daily-label">Target hari ini</span>
+                <button className={'daily-label' + (today === 0 ? ' is-link' : '')} onClick={() => setTargetOpen((o) => !o)}
+                  aria-expanded={targetOpen} title="Ubah target harian">
+                  {today === 0 ? 'Atur target harian' : 'Target hari ini'}
+                </button>
               </div>
+              {targetOpen && <TargetPopover value={dailyTarget} onSave={setDailyTarget} onClose={() => setTargetOpen(false)} />}
             </div>
           </nav>
         )}
@@ -282,16 +313,26 @@ export default function Workspace({ project, onClose }: Props) {
                 key={activeId!}
                 markdown={active.scene.body}
                 heading={`${chapterLabel(p, active.chapter)} · Adegan ${sceneIndex + 1}`}
-                title={String(active.scene.meta.judul || 'Tanpa judul')}
+                title={String(active.scene.meta.judul || '')}
                 zoom={zoom}
+                focusMode={focusMode}
+                onRename={(t) => actions.renameScene(active.chapter, active.scene, t)}
                 autoFocus={!editing}
                 onZoom={changeZoom}
                 onChange={onChange}
                 onReady={onReady}
               />
             ) : (
-              <div className="ws-noscene">Belum ada adegan untuk ditulis.</div>
+              <div className="ws-noscene">
+                <span className="ws-noscene-title">{p.chapters.length ? 'Belum ada adegan' : 'Naskah masih kosong'}</span>
+                <span>Mulai dengan menambah {p.chapters.length ? 'adegan' : 'bab'} pertama.</span>
+                <button className="btn btn-primary" onClick={() => {
+                  const c = p.chapters[p.chapters.length - 1]
+                  if (c) actions.addScene(c); else actions.addChapter()
+                }}>{p.chapters.length ? 'Tambah adegan' : 'Tambah bab'}</button>
+              </div>
             )}
+            {!focusMode && (
             <footer className="ws-footer">
               <span className="ws-status">
                 {active && <>Adegan ini {formatNumber(active.scene.words)} kata · </>}
@@ -302,9 +343,10 @@ export default function Workspace({ project, onClose }: Props) {
                 Total {formatNumber(total)}{p.data.target_kata ? ` / ${formatNumber(p.data.target_kata)}` : ''} kata
               </span>
             </footer>
+            )}
           </div>
 
-          {showRight && (
+          {showRight && !focusMode && (
             <aside className="side" aria-label="Panel samping">
               <div className="side-tabs" role="tablist">
                 {(['asisten', 'adegan', 'catatan'] as Tab[]).map((t) => (
@@ -315,9 +357,18 @@ export default function Workspace({ project, onClose }: Props) {
               </div>
               <div className="side-body" role="tabpanel">
                 {tab === 'asisten' && (
-                  <div className="side-note">
-                    <span className="label">Asisten AI</span>
-                    <p>Bantuan saat buntu, periksa ejaan, dan cari adegan akan hadir di Fase 3.</p>
+                  <div className="side-empty">
+                    <span className="side-empty-icon" aria-hidden="true">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.6" strokeLinejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /></svg>
+                    </span>
+                    <span className="side-empty-title">Halaman kosong itu wajar</span>
+                    <span className="side-empty-text">Tulis apa saja dulu, sesingkat apa pun. Merapikan bisa nanti.</span>
+                    <ul className="side-tips">
+                      <li><b>Ganti judul adegan</b> langsung di atas halaman, atau klik dua kali namanya di binder.</li>
+                      <li><b>Pemisah adegan:</b> ketik <kbd>---</kbd> lalu Enter.</li>
+                      <li><b>Mode fokus:</b> tekan <kbd>⌘.</kbd> untuk menyembunyikan semua panel.</li>
+                    </ul>
+                    <p className="side-soon">Asisten AI (ide saat buntu, periksa ejaan, cari adegan) hadir di Fase 3.</p>
                   </div>
                 )}
                 {tab === 'adegan' && (
@@ -339,8 +390,38 @@ export default function Workspace({ project, onClose }: Props) {
           )}
         </main>
       </div>
+      {focusMode && (
+        <div className="focus-pill">
+          <SaveBadge state={save} onRetry={flush} />
+          <span aria-hidden="true">·</span>
+          <button onClick={() => setFocusMode(false)}>Keluar mode fokus <kbd>Esc</kbd></button>
+        </div>
+      )}
       {toast && <div className="toast" role="alert">{toast}</div>}
     </div>
+  )
+}
+
+function TargetPopover({ value, onSave, onClose }: { value: number; onSave: (n: number) => void; onClose: () => void }) {
+  const [v, setV] = useState(value ? String(value) : '')
+  const ref = useRef<HTMLFormElement>(null)
+  useEffect(() => {
+    ref.current?.querySelector('input')?.select()
+    const onDown = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node) && !(e.target as HTMLElement).closest('.daily')) onClose() }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [onClose])
+  return (
+    <form ref={ref} className="target-pop" onSubmit={(e) => { e.preventDefault(); onSave(Number(v.replace(/\D/g, '')) || 0) }}
+      onKeyDown={(e) => { if (e.key === 'Escape') { e.stopPropagation(); onClose() } }}>
+      <label htmlFor="target-harian">Target kata per hari</label>
+      <div className="target-row">
+        <input id="target-harian" inputMode="numeric" value={v} placeholder="mis. 500" autoFocus
+          onChange={(e) => setV(e.target.value.replace(/\D/g, '').slice(0, 6))} />
+        <button type="submit">Simpan</button>
+      </div>
+      <span className="target-hint">Kosongkan untuk tanpa target.</span>
+    </form>
   )
 }
 
