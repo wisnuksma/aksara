@@ -13,7 +13,7 @@ export interface NewNovel {
 interface ChapterSeed { judul: string; catatan: string; adegan: string[] }
 
 const STRUKTUR: Record<Template, ChapterSeed[]> = {
-  kosong: [{ judul: 'Bab Satu', catatan: '', adegan: ['Adegan 1'] }],
+  kosong: [{ judul: 'Bab 1', catatan: '', adegan: ['Adegan 1'] }],
   'tiga-babak': [
     { judul: 'Babak I — Awal', catatan: 'Perkenalkan tokoh utama, dunianya, dan apa yang ia inginkan. Akhiri dengan peristiwa pemicu yang mengubah segalanya.', adegan: ['Adegan pembuka'] },
     { judul: 'Babak II — Konflik', catatan: 'Rintangan makin berat. Di tengah babak ada titik balik; menjelang akhir, tokoh utama berada di titik terendah.', adegan: ['Adegan 1'] },
@@ -21,7 +21,7 @@ const STRUKTUR: Record<Template, ChapterSeed[]> = {
   ],
   'fantasi-epik': [
     { judul: 'Prolog', catatan: 'Sekilas tentang dunia atau peristiwa lama yang menjadi akar konflik.', adegan: ['Adegan 1'] },
-    { judul: 'Bab Satu', catatan: '', adegan: ['Adegan 1'] },
+    { judul: 'Bab 1', catatan: '', adegan: ['Adegan 1'] },
   ],
 }
 

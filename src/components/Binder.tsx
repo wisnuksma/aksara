@@ -199,8 +199,11 @@ function InlineEdit({ value, label, className, onDone }: { value: string; label:
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finish(null) }
   }
   return (
-    <input ref={ref} className={'binder-input ' + className} aria-label={label} value={v} maxLength={120}
-      onChange={(e) => setV(e.target.value)} onKeyDown={onKey} onBlur={() => finish(v)} />
+    <div className="binder-edit">
+      <input ref={ref} className={'binder-input ' + className} aria-label={label} value={v} maxLength={120}
+        onChange={(e) => setV(e.target.value)} onKeyDown={onKey} onBlur={() => finish(v)} />
+      <span className="binder-edit-hint" aria-hidden="true">Enter simpan · Esc batal</span>
+    </div>
   )
 }
 

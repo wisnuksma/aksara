@@ -97,3 +97,28 @@ export const totalWords = (p: Project) =>
   p.chapters.reduce((n, c) => n + c.scenes.reduce((m, s) => m + s.words, 0), 0)
 
 export const sceneId = (c: Chapter, s: Scene) => `${c.folder}/${s.file}`
+
+/** Prolog, epilog, dan sejenisnya tidak diberi nomor bab. */
+export const isUnnumbered = (judul: string) =>
+  /^\s*(prolog|prologue|epilog|epilogue|interlude|intermezo)\b/i.test(judul)
+
+/** Nomor bab (1, 2, …) dengan melewati prolog/epilog; null bila tidak bernomor. */
+export function chapterNumber(p: Project, c: Chapter): number | null {
+  if (isUnnumbered(c.judul)) return null
+  let n = 0
+  for (const x of p.chapters) {
+    if (!isUnnumbered(x.judul)) n++
+    if (x === c) return n
+  }
+  return null
+}
+
+/** "Bab 3" atau "Prolog" — dipakai di atas halaman. */
+export function chapterLabel(p: Project, c: Chapter): string {
+  const n = chapterNumber(p, c)
+  return n == null ? c.judul.trim() : `Bab ${n}`
+}
+
+/** Nama bawaan untuk bab baru: "Bab <nomor berikutnya>". */
+export const nextChapterTitle = (p: Project) =>
+  `Bab ${p.chapters.filter((c) => !isUnnumbered(c.judul)).length + 1}`

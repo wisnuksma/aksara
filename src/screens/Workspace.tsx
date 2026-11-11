@@ -3,7 +3,7 @@ import { get, set } from 'idb-keyval'
 import Editor from '../components/Editor'
 import Binder from '../components/Binder'
 import * as ops from '../lib/binderOps'
-import { saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
+import { chapterLabel, nextChapterTitle, saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
 import { loadStats, saveStats, todayKey, type Stats } from '../lib/stats'
 import { formatNumber, rememberProject } from '../lib/recent'
 import './workspace.css'
@@ -184,7 +184,7 @@ export default function Workspace({ project, onClose }: Props) {
     openScene,
     toggleChapter,
     addChapter: () => change('menambah bab', async () => {
-      const c = await ops.addChapter(p, 'Bab baru')
+      const c = await ops.addChapter(p, nextChapterTitle(p))
       expand(c)
       selectScene(c, c.scenes[0])
       setEditing(`ch:${c.folder}`)
@@ -219,7 +219,6 @@ export default function Workspace({ project, onClose }: Props) {
   }
 
   const active = find(activeId)
-  const chapterIndex = active ? p.chapters.indexOf(active.chapter) : -1
   const sceneIndex = active ? active.chapter.scenes.indexOf(active.scene) : -1
   const chapterWords = (c: Chapter) => c.scenes.reduce((n, s) => n + s.words, 0)
   const total = totalWords(p)
@@ -282,7 +281,7 @@ export default function Workspace({ project, onClose }: Props) {
               <Editor
                 key={activeId!}
                 markdown={active.scene.body}
-                heading={`Bab ${chapterIndex + 1} · Adegan ${sceneIndex + 1}`}
+                heading={`${chapterLabel(p, active.chapter)} · Adegan ${sceneIndex + 1}`}
                 title={String(active.scene.meta.judul || 'Tanpa judul')}
                 zoom={zoom}
                 autoFocus={!editing}
