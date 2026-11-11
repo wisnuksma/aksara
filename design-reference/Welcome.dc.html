@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Layar Sambutan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=Inter:wght@400;500;600&amp;family=Literata:opsz,wght@7..72,400;7..72,500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#12141D}
+a{color:#F0DDB3}a:hover{color:#FFFFFF}
+button{font:inherit}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; flex-wrap: wrap; background: #EFE7D6; font-family: Inter, system-ui, sans-serif; font-size: 13px; color: #2A2620">
+
+  <section style="flex: 1 1 520px; box-sizing: border-box; background: #1B1E2B; color: #E8E3D6; padding: 22px 56px 48px; display: flex; flex-direction: column">
+    <div aria-hidden="true" style="display: flex; gap: 8px; margin-left: -36px">
+      <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57"></span>
+      <span style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E"></span>
+      <span style="width: 12px; height: 12px; border-radius: 50%; background: #28C840"></span>
+    </div>
+
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 36px; max-width: 440px; padding: 40px 0">
+      <div style="display: flex; flex-direction: column; gap: 18px">
+        <div aria-hidden="true" style="width: 72px; height: 72px; border-radius: 18px; background: #23273A; border: 1px solid #343950; display: flex; align-items: center; justify-content: center">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="{{gold}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3c-6 1-11 6-13 13l-2 5 5-2c7-2 12-7 13-13"/><path d="M8 16l4-4"/></svg>
+        </div>
+        <h1 style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 56px; font-weight: 600; line-height: 1">Novel Writer</h1>
+        <p style="margin: 0; color: #B4B6C6; font-size: 15px; line-height: 1.6">Tulis naskah, bangun dunia, dan simpan semuanya di Mac Anda.</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <a href="Baru.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; background: {{gold}}; color: #1B1E2B; text-decoration: none">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Mulai novel baru</span><span style="font-size: 12px; color: #3A2E14">Buat proyek kosong atau dari template</span></span>
+          <kbd style="font-family: inherit; font-size: 11px; background: rgba(27,30,43,.12); border-radius: 4px; padding: 2px 6px">⌘N</kbd>
+        </a>
+        <button style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; border: 1px solid #343950; background: #23273A; color: #E8E3D6; text-align: left; cursor: pointer">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Buka proyek</span><span style="font-size: 12px; color: #A3A6B8">Pilih folder novel yang sudah ada</span></span>
+          <kbd style="font-family: inherit; font-size: 11px; background: #2F3448; color: #C9CBD8; border-radius: 4px; padding: 2px 6px">⌘O</kbd>
+        </button>
+        <button style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; border: 1px solid #343950; background: #23273A; color: #E8E3D6; text-align: left; cursor: pointer">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          <span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-weight: 600; font-size: 14px">Impor naskah</span><span style="font-size: 12px; color: #A3A6B8">Dari Word (.docx) atau Markdown</span></span>
+        </button>
+      </div>
+    </div>
+
+    <span style="color: #8A8DA0; font-size: 12px">Versi 0.1 · Semua file tersimpan lokal</span>
+  </section>
+
+  <section style="flex: 1 1 560px; box-sizing: border-box; padding: 64px 56px 48px; display: flex; flex-direction: column; gap: 36px">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .14em; color: #8A6A2B">PROYEK TERBARU</h2>
+      <div style="border: 1.5px dashed #D6C9AC; border-radius: 16px; padding: 48px 32px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; background: rgba(255,251,243,.5)">
+        <svg aria-hidden="true" width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#B9A06A" stroke-width="1.5" stroke-linejoin="round"><path d="M12 14c8-3 14-3 20 2v36c-6-5-12-5-20-2z"/><path d="M52 14c-8-3-14-3-20 2v36c6-5 12-5 20-2z"/><path d="M18 22h8M18 28h8M38 22h8M38 28h8"/></svg>
+        <span style="font-family: Literata, Georgia, serif; font-size: 20px; font-weight: 500">Belum ada novel</span>
+        <span style="color: #6E6555; max-width: 320px; line-height: 1.6">Novel yang Anda buat atau buka akan muncul di sini, lengkap dengan jumlah kata dan kapan terakhir ditulis.</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .14em; color: #8A6A2B">MULAI DARI TEMPLATE</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+        <a href="Baru.dc.html" style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 14px; background: #FFFBF3; border: 1px solid #E6DCC6; text-decoration: none; color: #2A2620">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A6A2B" stroke-width="1.6" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/></svg>
+          <span style="font-weight: 600">Kosong</span>
+          <span style="color: #6E6555; font-size: 12px; line-height: 1.5">Satu bab, satu adegan. Bebas dari awal.</span>
+        </a>
+        <a href="Baru.dc.html" style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 14px; background: #FFFBF3; border: 1px solid #E6DCC6; text-decoration: none; color: #2A2620">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A6A2B" stroke-width="1.6" stroke-linecap="round"><path d="M4 18h4V12h4V8h4V4h4"/></svg>
+          <span style="font-weight: 600">Tiga babak</span>
+          <span style="color: #6E6555; font-size: 12px; line-height: 1.5">Awal, konflik, resolusi, dengan catatan tiap babak.</span>
+        </a>
+        <a href="Baru.dc.html" style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 14px; background: #FFFBF3; border: 1px solid #E6DCC6; text-decoration: none; color: #2A2620">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A6A2B" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v4M20 12h-4M12 20v-4M4 12h4"/></svg>
+          <span style="font-weight: 600">Fantasi epik</span>
+          <span style="color: #6E6555; font-size: 12px; line-height: 1.5">Ditambah folder faksi, peta, dan lore.</span>
+        </a>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; padding: 16px 18px; border-radius: 14px; background: #F7F1E4; display: flex; align-items: center; gap: 14px">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A6A2B" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+      <span style="flex: 1; color: #3D372D; line-height: 1.5">Punya ide tapi belum tahu mulai dari mana? Asisten AI bisa membantu menyusun premis dan kerangka bab.</span>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"gold":{"editor":"color","default":"#C9A45C","options":["#C9A45C","#B8C4D6","#D9A08B"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { gold: this.props.gold ?? '#C9A45C' };
+  }
+}
+</script>
+</body>
+</html>

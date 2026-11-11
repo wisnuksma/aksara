@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Mode Menulis dengan Asisten AI, gelap</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#12141D}
+a{color:#8A6A2B}a:hover{color:#6B5020}
+button,textarea{font:inherit}
+</style>
+</helmet>
+<div style="width: 100%; height: 900px; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; background: #1B1E2B; font-family: Inter, system-ui, sans-serif; color: #E8E3D6; font-size: 13px">
+
+  <header style="height: 56px; flex-shrink: 0; display: flex; align-items: center; gap: 18px; padding: 0 20px; border-bottom: 1px solid #2A2E40; flex-wrap: wrap">
+    <div aria-hidden="true" style="display: flex; gap: 8px">
+      <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57"></span>
+      <span style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E"></span>
+      <span style="width: 12px; height: 12px; border-radius: 50%; background: #28C840"></span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; margin-left: 8px">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{gold}}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3c-6 1-11 6-13 13l-2 5 5-2c7-2 12-7 13-13"/><path d="M8 16l4-4"/></svg>
+      <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 600">Estelle &amp; Navea</span>
+    </div>
+    <div style="flex: 1; min-width: 40px"></div>
+    <div role="group" aria-label="Mode kerja" style="display: flex; gap: 4px; padding: 4px; border-radius: 10px; background: #23273A">
+      <button style="border: 0; padding: 7px 16px; border-radius: 7px; background: {{gold}}; color: #1B1E2B; font-weight: 600; cursor: pointer">Menulis</button>
+      <button style="border: 0; padding: 7px 16px; border-radius: 7px; background: transparent; color: #B4B6C6; cursor: pointer">Merencanakan</button>
+      <button style="border: 0; padding: 7px 16px; border-radius: 7px; background: transparent; color: #B4B6C6; cursor: pointer">Dunia</button>
+    </div>
+    <button style="height: 34px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border: 1px solid #2F3448; border-radius: 9px; background: #23273A; color: #A3A6B8; cursor: pointer">
+      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Cari…
+      <kbd style="font-family: inherit; font-size: 11px; background: #2F3448; color: #C9CBD8; border-radius: 4px; padding: 1px 6px">⌘K</kbd>
+    </button>
+  </header>
+
+  <div style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+
+    <nav aria-label="Binder" style="flex: 0 0 220px; box-sizing: border-box; padding: 22px 14px; display: flex; flex-direction: column; gap: 26px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="padding: 0 10px 10px; font-size: 11px; font-weight: 600; letter-spacing: .14em; color: {{gold}}">NASKAH</span>
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; background: #23273A">
+          <div style="display: flex; justify-content: space-between; align-items: baseline">
+            <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 19px; font-weight: 600">I. Fajar di Estelle</span>
+            <span style="color: #9A9DB0; font-size: 11px">4.810</span>
+          </div>
+          <span aria-hidden="true" style="height: 3px; border-radius: 2px; background: #2F3448; display: block; overflow: hidden"><span style="display: block; width: 80%; height: 100%; background: {{gold}}"></span></span>
+          <div style="display: flex; flex-direction: column; gap: 2px; margin-top: 4px">
+            <span style="padding: 7px 10px; border-radius: 7px; color: #C9CBD8">Gerbang Utara</span>
+            <span style="padding: 7px 10px; border-radius: 7px; background: rgba(201,164,92,.16); color: #F0DDB3; font-weight: 500">Surat dari Navea</span>
+            <span style="padding: 7px 10px; border-radius: 7px; color: #C9CBD8">Dewan Malam</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px">
+          <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 19px; font-weight: 500; color: #C9CBD8">II. Utusan</span>
+          <span style="color: #9A9DB0; font-size: 11px">2.105</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 0 12px 12px">
+          <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 19px; font-weight: 500; color: #C9CBD8">III. Sungai yang Membelah</span>
+          <span style="color: #9A9DB0; font-size: 11px">—</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <span style="padding: 0 10px; font-size: 11px; font-weight: 600; letter-spacing: .14em; color: {{gold}}">DUA KERAJAAN</span>
+        <div style="display: flex; gap: 8px; padding: 0 4px">
+          <div style="flex: 1; padding: 12px; border-radius: 12px; background: #22304A; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-weight: 600">Estelle</span>
+            <span style="color: #A9B3C8; font-size: 11px">Tokoh · Tempat</span>
+          </div>
+          <div style="flex: 1; padding: 12px; border-radius: 12px; background: #3A2330; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-weight: 600">Navea</span>
+            <span style="color: #C8AEB8; font-size: 11px">Tokoh · Tempat</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: auto; padding: 14px; border-radius: 12px; border: 1px solid #2F3448; display: flex; align-items: center; gap: 14px">
+        <svg role="img" aria-label="Target harian 57 persen" width="40" height="40" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#2F3448" stroke-width="4"/><circle cx="22" cy="22" r="18" fill="none" stroke="{{gold}}" stroke-width="4" stroke-linecap="round" stroke-dasharray="64.5 113.1" transform="rotate(-90 22 22)"/></svg>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-weight: 600">860 / 1.500 kata</span>
+          <span style="color: #9A9DB0; font-size: 12px">Target hari ini</span>
+        </div>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 640px; min-width: 0; background: #13151E; border-radius: 16px 16px 0 0; margin: 10px 10px 0 0; display: flex; flex-wrap: wrap; color: #E4DED0; overflow: hidden">
+
+      <div style="flex: 999 1 460px; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden">
+        <div role="toolbar" aria-label="Format teks" style="flex-shrink: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin: 14px 24px 0; padding: 6px 10px; border-radius: 12px; background: #181B26; border: 1px solid #2C3044; color: #E4DED0">
+          <button aria-label="Urungkan" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #C9C3B5; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+          <button aria-label="Ulangi" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #C9C3B5; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+          <span aria-hidden="true" style="width: 1px; height: 20px; background: #363B52; margin: 0 6px"></span>
+          <button style="height: 30px; padding: 0 10px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; display: flex; align-items: center; gap: 6px; cursor: pointer">Teks normal <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+          <button style="height: 30px; padding: 0 10px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; font-family: Literata, Georgia, serif; display: flex; align-items: center; gap: 6px; cursor: pointer">Literata <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+          <span style="height: 28px; min-width: 36px; padding: 0 6px; box-sizing: border-box; border: 1px solid #363B52; border-radius: 7px; display: flex; align-items: center; justify-content: center; background: #1E2130">17</span>
+          <span aria-hidden="true" style="width: 1px; height: 20px; background: #363B52; margin: 0 6px"></span>
+          <button aria-label="Tebal" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; font-weight: 700; cursor: pointer">B</button>
+          <button aria-label="Miring" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; font-style: italic; font-family: Georgia, serif; cursor: pointer">I</button>
+          <button aria-label="Garis bawah" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; text-decoration: underline; cursor: pointer">U</button>
+          <span aria-hidden="true" style="width: 1px; height: 20px; background: #363B52; margin: 0 6px"></span>
+          <button aria-label="Rata kiri" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: #2E3349; color: #E4DED0; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg></button>
+          <button aria-label="Rata tengah" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></svg></button>
+          <button aria-label="Rata kiri kanan" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg></button>
+          <button aria-label="Komentar" style="width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: #E4DED0; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button>
+          <span style="flex: 1"></span>
+          <button style="height: 30px; padding: 0 10px; border: 0; border-radius: 7px; background: transparent; color: #C9C3B5; display: flex; align-items: center; gap: 6px; cursor: pointer">100% <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 24px 24px 24px; display: flex; justify-content: center">
+          <article style="max-width: 816px; width: 100%; min-height: 1000px; background: #1E2130; border-radius: 6px; box-shadow: 0 1px 0 rgba(0,0,0,.2), 0 18px 40px rgba(0,0,0,.35); padding: 80px 96px 96px; box-sizing: border-box; position: relative">
+            <span style="display: block; font-size: 12px; color: #A39C8C; margin-bottom: 8px">Bab 1 · Adegan 2</span>
+            <h1 style="margin: 0 0 28px; font-family: Literata, Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.3">Surat dari Navea</h1>
+            <div style="font-family: Literata, Georgia, serif; font-size: 17px; line-height: 1.8">
+              <p style="margin: 0 0 14px">Hujan belum reda ketika kurir itu tiba di Gerbang Utara. Jubahnya basah kuyup, tapi segel lilin pada gulungan yang ia bawa masih utuh — biru tua, berlambang menara kembar <span style="border-bottom: 1px dotted #E8AABD">Navea</span>.</p>
+              <p style="margin: 0 0 14px"><span style="border-bottom: 1px dotted #B4CAEC">Elara</span> menerimanya tanpa berkata <span style="text-decoration: underline wavy #F08A7C; text-decoration-thickness: 1.5px; text-underline-offset: 4px; background: #4A2A2D; border-radius: 2px">apa apa</span>. Sudah tiga musim tak ada surat dari seberang sungai, dan kabar terakhir dari sana datang dibawa pedang, bukan tinta.</p>
+              <p style="margin: 0 0 14px">“Bacakan di depan dewan,” kata <span style="border-bottom: 1px dotted #B4CAEC">Komandan Aldric</span> dari ambang pintu. “Kalau isinya perang, biar semua mendengar bersamaan.”</p>
+              <p style="margin: 0">Elara memutar gulungan itu di tangannya. Segelnya masih hangat.<span aria-hidden="true" style="display: inline-block; width: 2px; height: 19px; background: #D4B26C; vertical-align: -4px; margin-left: 2px"></span></p>
+            </div>
+
+            <div role="dialog" aria-label="Saran ejaan" style="position: absolute; top: 300px; left: 300px; width: 280px; background: #1E2130; color: #E4DED0; border: 1px solid #2C3044; border-radius: 12px; padding: 14px; box-shadow: 0 16px 36px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 10px; font-family: Inter, system-ui, sans-serif; font-size: 13px">
+              <span style="font-size: 11px; font-weight: 600; letter-spacing: .12em; color: #F08A7C">EJAAN</span>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 15px">
+                <span style="text-decoration: line-through; color: #A39C8C">apa apa</span>
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A39C8C" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                <span style="font-weight: 600">apa-apa</span>
+              </div>
+              <span style="color: #C9C3B5; line-height: 1.5">Kata ulang ditulis dengan tanda hubung.</span>
+              <div style="display: flex; gap: 8px">
+                <button style="flex: 1; height: 32px; border: 0; border-radius: 8px; background: #2E3349; color: #F0DDB3; font-weight: 500; cursor: pointer">Terima</button>
+                <button style="flex: 1; height: 32px; border: 1px solid #2C3044; border-radius: 8px; background: transparent; color: #E4DED0; cursor: pointer">Abaikan</button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <footer style="height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 32px; color: #A39C8C; font-size: 12px; flex-wrap: wrap">
+          <span>Adegan ini 1.240 kata · Tersimpan</span>
+          <span style="display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 50%; background: #F08A7C"></span>2 saran ejaan di bab ini</span>
+        </footer>
+      </div>
+
+      <aside aria-label="Asisten AI" style="flex: 0 0 320px; box-sizing: border-box; border-left: 1px solid #2C3044; background: #181B26; display: flex; flex-direction: column; min-height: 0; overflow: hidden">
+        <div style="padding: 16px 18px 0; display: flex; flex-direction: column; gap: 14px">
+          <div role="tablist" style="display: flex; gap: 18px; border-bottom: 1px solid #2C3044">
+            <button role="tab" aria-selected="true" style="border: 0; background: transparent; padding: 0 0 10px; margin-bottom: -1px; border-bottom: 2px solid #D4B26C; color: #E4DED0; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer">
+              <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4B26C" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z"/></svg>
+              Asisten
+            </button>
+            <button role="tab" aria-selected="false" style="border: 0; background: transparent; padding: 0 0 10px; color: #A39C8C; cursor: pointer">Adegan</button>
+            <button role="tab" aria-selected="false" style="border: 0; background: transparent; padding: 0 0 10px; color: #A39C8C; cursor: pointer">Catatan</button>
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap">
+            <button style="font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid #363B52; background: #1E2130; color: #C9C3B5; cursor: pointer">Saya buntu</button>
+            <button style="font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid #363B52; background: #1E2130; color: #C9C3B5; cursor: pointer">Periksa ejaan</button>
+            <button style="font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid #363B52; background: #1E2130; color: #C9C3B5; cursor: pointer">Cari adegan</button>
+            <button style="font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid #363B52; background: #1E2130; color: #C9C3B5; cursor: pointer">Cek konsistensi</button>
+          </div>
+        </div>
+
+        <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+          <div style="align-self: flex-end; max-width: 85%; background: #2E3349; color: #F0EADB; padding: 10px 14px; border-radius: 14px 14px 4px 14px; line-height: 1.5">Saya buntu. Apa yang bisa terjadi setelah Elara menerima surat ini?</div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; color: #E4DED0; line-height: 1.55">
+            <span>Tiga arah yang cocok dengan story bible Anda:</span>
+            <div style="background: #1E2130; border: 1px solid #2C3044; border-radius: 10px; padding: 10px 12px"><span style="font-weight: 600">1. Dibuka diam-diam.</span> Elara membaca surat sebelum dewan berkumpul, dan Aldric memergokinya.</div>
+            <div style="background: #1E2130; border: 1px solid #2C3044; border-radius: 10px; padding: 10px 12px"><span style="font-weight: 600">2. Segel palsu.</span> Seseorang di Estelle sendiri yang mengirimnya.</div>
+            <div style="background: #1E2130; border: 1px solid #2C3044; border-radius: 10px; padding: 10px 12px"><span style="font-weight: 600">3. Damai bersyarat.</span> Navea menawarkan gencatan senjata yang memecah dewan.</div>
+            <div style="display: flex; gap: 6px">
+              <button style="font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 0; background: #2E3349; color: #E4DED0; cursor: pointer">Kembangkan nomor 2</button>
+              <button style="font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 0; background: transparent; color: #A39C8C; cursor: pointer">Ide lain</button>
+            </div>
+          </div>
+
+          <div style="align-self: flex-end; max-width: 85%; background: #2E3349; color: #F0EADB; padding: 10px 14px; border-radius: 14px 14px 4px 14px; line-height: 1.5">Cari adegan saat Aldric pertama kali curiga pada Navea</div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; color: #E4DED0">
+            <span>Ketemu 2 adegan:</span>
+            <a href="Main.dc.html" style="display: flex; flex-direction: column; gap: 4px; background: #1E2130; border: 1px solid #2C3044; border-radius: 10px; padding: 10px 12px; text-decoration: none; color: #E4DED0">
+              <span style="display: flex; justify-content: space-between"><span style="font-weight: 600">Gerbang Utara</span><span style="color: #A39C8C; font-size: 12px">Bab 1</span></span>
+              <span style="color: #C9C3B5; font-family: Literata, Georgia, serif; font-size: 13px">“…Aldric menatap ke seberang sungai lebih lama dari biasanya.”</span>
+            </a>
+            <a href="Main.dc.html" style="display: flex; flex-direction: column; gap: 4px; background: #1E2130; border: 1px solid #2C3044; border-radius: 10px; padding: 10px 12px; text-decoration: none; color: #E4DED0">
+              <span style="display: flex; justify-content: space-between"><span style="font-weight: 600">Utusan</span><span style="color: #A39C8C; font-size: 12px">Bab 2</span></span>
+              <span style="color: #C9C3B5; font-family: Literata, Georgia, serif; font-size: 13px">“…ia menolak menjabat tangan utusan itu.”</span>
+            </a>
+          </div>
+        </div>
+
+        <div style="padding: 14px 18px 18px; border-top: 1px solid #2C3044; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #A39C8C">
+            <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/></svg>
+            Konteks: adegan ini + story bible
+          </div>
+          <label style="display: flex; align-items: flex-end; gap: 8px; background: #1E2130; border: 1px solid #363B52; border-radius: 12px; padding: 10px 10px 10px 14px">
+            <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Pesan untuk asisten</span>
+            <textarea rows="2" placeholder="Tanya apa saja tentang cerita Anda…" style="flex: 1; border: 0; outline: none; resize: none; background: transparent; color: #E4DED0; line-height: 1.5"></textarea>
+            <button aria-label="Kirim" style="width: 34px; height: 34px; border: 0; border-radius: 9px; background: #2E3349; color: #F0DDB3; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+          </label>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"gold":{"editor":"color","default":"#C9A45C","options":["#C9A45C","#B8C4D6","#D9A08B"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { gold: this.props.gold ?? '#C9A45C' };
+  }
+}
+</script>
+</body>
+</html>

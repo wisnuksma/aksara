@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Novel Baru</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&amp;family=Inter:wght@400;500;600&amp;family=Literata:opsz,wght@7..72,400;7..72,500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#12141D}
+a{color:#8A6A2B}a:hover{color:#6B5020}
+button,input,select{font:inherit}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 48px 24px; background: #3A3B40; font-family: Inter, system-ui, sans-serif; font-size: 13px; color: #2A2620">
+
+  <form role="dialog" aria-label="Novel baru" style="width: 100%; max-width: 620px; background: #FFFBF3; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.45); display: flex; flex-direction: column; overflow: hidden">
+    <div style="padding: 28px 32px 8px; display: flex; flex-direction: column; gap: 6px">
+      <h1 style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 34px; font-weight: 600">Novel baru</h1>
+      <p style="margin: 0; color: #6E6555">Semua bisa diubah nanti. Isi seadanya dulu.</p>
+    </div>
+
+    <div style="padding: 20px 32px; display: flex; flex-direction: column; gap: 20px">
+      <label style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600">Judul</span>
+        <input placeholder="Judul sementara juga boleh" style="height: 42px; padding: 0 14px; border: 1px solid #E0D4BA; border-radius: 10px; background: #FFFFFF; color: #2A2620; font-family: Literata, Georgia, serif; font-size: 16px; outline: none">
+      </label>
+
+      <div style="display: flex; gap: 14px; flex-wrap: wrap">
+        <label style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-weight: 600">Genre</span>
+          <select style="height: 42px; padding: 0 12px; border: 1px solid #E0D4BA; border-radius: 10px; background: #FFFFFF; color: #2A2620">
+            <option>Fantasi</option><option>Romansa</option><option>Misteri</option><option>Fiksi ilmiah</option><option>Drama</option><option>Lainnya</option>
+          </select>
+        </label>
+        <label style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-weight: 600">Target kata</span>
+          <input inputmode="numeric" placeholder="mis. 80.000" style="height: 42px; padding: 0 14px; border: 1px solid #E0D4BA; border-radius: 10px; background: #FFFFFF; color: #2A2620; outline: none">
+        </label>
+      </div>
+
+      <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px">
+        <legend style="font-weight: 600; padding: 0; margin-bottom: 8px">Struktur awal</legend>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+          <label style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; border: 2px solid #8A6A2B; background: #F7F1E4; cursor: pointer">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600"><input type="radio" name="struktur" checked style="accent-color: #8A6A2B; margin: 0">Kosong</span>
+            <span style="color: #6E6555; font-size: 12px; line-height: 1.5">Mulai bebas</span>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; border: 1px solid #E0D4BA; background: #FFFFFF; cursor: pointer">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600"><input type="radio" name="struktur" style="accent-color: #8A6A2B; margin: 0">Tiga babak</span>
+            <span style="color: #6E6555; font-size: 12px; line-height: 1.5">Awal · konflik · resolusi</span>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 12px; border: 1px solid #E0D4BA; background: #FFFFFF; cursor: pointer">
+            <span style="display: flex; align-items: center; gap: 8px; font-weight: 600"><input type="radio" name="struktur" style="accent-color: #8A6A2B; margin: 0">Fantasi epik</span>
+            <span style="color: #6E6555; font-size: 12px; line-height: 1.5">Plus faksi, peta, lore</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600">Disimpan di</span>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: #F7F1E4">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A6A2B" stroke-width="1.6" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span style="flex: 1; color: #3D372D; font-family: ui-monospace, Menlo, monospace; font-size: 12px">~/Documents/Novel Writer/</span>
+          <button type="button" style="border: 1px solid #E0D4BA; background: #FFFBF3; border-radius: 7px; padding: 5px 10px; color: #2A2620; cursor: pointer">Ubah…</button>
+        </div>
+        <label style="display: flex; align-items: center; gap: 8px; color: #3D372D"><input type="checkbox" checked style="accent-color: #8A6A2B; margin: 0">Sinkronkan lewat iCloud Drive</label>
+      </div>
+    </div>
+
+    <div style="padding: 18px 32px; border-top: 1px solid #EDE4D0; display: flex; justify-content: flex-end; gap: 10px; background: #FBF6EC">
+      <a href="Welcome.dc.html" style="height: 40px; display: flex; align-items: center; padding: 0 18px; border-radius: 10px; border: 1px solid #E0D4BA; color: #2A2620; text-decoration: none">Batal</a>
+      <a href="Kosong.dc.html" style="height: 40px; display: flex; align-items: center; padding: 0 20px; border-radius: 10px; background: #1B1E2B; color: #F0DDB3; font-weight: 600; text-decoration: none">Buat novel</a>
+    </div>
+  </form>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

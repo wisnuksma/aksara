@@ -1,0 +1,33 @@
+/* Token warna "Perkamen & Tinta" (lihat CLAUDE.md bagian 4).
+   Mode gelap ditambahkan pada langkah "Dark mode otomatis". */
+:root {
+  /* Area gelap (sidebar, header) */
+  --ink: #1B1E2B;
+  --ink-card: #23273A;
+  --ink-line: #2A2E40;
+  --ink-line-2: #2F3448;
+  --ink-border: #343950;
+  --ink-text: #E8E3D6;
+  --ink-text-2: #B4B6C6;
+  --ink-text-3: #9A9DB0;
+
+  /* Aksen */
+  --gold: #C9A45C;
+  --gold-text: #8A6A2B;
+
+  /* Area terang */
+  --desk: #EFE7D6;
+  --paper: #FFFBF3;
+  --panel: #F7F1E4;
+  --line: #E6DCC6;
+  --line-2: #E0D4BA;
+  --line-dashed: #D6C9AC;
+  --text: #2A2620;
+  --text-2: #3D372D;
+  --text-3: #6E6555;
+
+  /* Tipografi */
+  --font-ui: Inter, system-ui, -apple-system, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-text: Literata, Georgia, serif;
+}
