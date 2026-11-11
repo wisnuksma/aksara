@@ -1,4 +1,6 @@
-# Novel Writer — Aplikasi Menulis Novel untuk Mac
+# Aksara — Aplikasi Menulis Novel untuk Mac
+
+_(Sebelumnya bernama "Novel Writer"; nama aplikasi diganti menjadi **Aksara**. Seluruh teks antarmuka memakai nama Aksara.)_
 
 Dokumen ini adalah spesifikasi utama proyek. Baca seluruhnya sebelum menulis kode.
 Pemilik proyek bukan programmer: jelaskan langkah dengan bahasa sederhana (Bahasa Indonesia),

@@ -38,7 +38,7 @@ export default function Welcome({ recent, onNew, onOpen, onImport, onOpenRecent 
             <div className="welcome-logo" aria-hidden="true">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 3c-6 1-11 6-13 13l-2 5 5-2c7-2 12-7 13-13" /><path d="M8 16l4-4" /></svg>
             </div>
-            <h1>Novel Writer</h1>
+            <h1>Aksara</h1>
             <p>Tulis naskah, bangun dunia, dan simpan semuanya di Mac Anda.</p>
           </div>
 
