@@ -9,6 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tiptap/core": "^3.33.1",
+    "@tiptap/extension-heading": "^3.33.1",
+    "@tiptap/extension-paragraph": "^3.33.1",
+    "@tiptap/extension-text-align": "^3.33.1",
+    "@tiptap/extensions": "^3.33.1",
+    "@tiptap/markdown": "^3.33.1",
+    "@tiptap/pm": "^3.33.1",
+    "@tiptap/react": "^3.33.1",
+    "@tiptap/starter-kit": "^3.33.1",
     "idb-keyval": "^6.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

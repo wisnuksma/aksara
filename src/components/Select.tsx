@@ -9,10 +9,14 @@ interface Props {
   options: string[]
   onChange: (v: string) => void
   id?: string
+  className?: string
+  /** Teks yang ditampilkan untuk sebuah pilihan (default: pilihan itu sendiri). */
+  label?: (v: string) => string
   'aria-labelledby'?: string
+  'aria-label'?: string
 }
 
-export default function Select({ value, options, onChange, id, ...aria }: Props) {
+export default function Select({ value, options, onChange, id, className, label = (v) => v, ...aria }: Props) {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(() => Math.max(0, options.indexOf(value)))
   const [up, setUp] = useState(false)
@@ -81,13 +85,13 @@ export default function Select({ value, options, onChange, id, ...aria }: Props)
       const t = typed.current
       t.text = (now - t.at > 700 ? '' : t.text) + e.key.toLowerCase()
       t.at = now
-      const i = options.findIndex((o) => o.toLowerCase().startsWith(t.text))
+      const i = options.findIndex((o) => label(o).toLowerCase().startsWith(t.text))
       if (i >= 0) { if (open) setActive(i); else onChange(options[i]) }
     }
   }
 
   return (
-    <div className="select" ref={rootRef}>
+    <div className={'select' + (className ? ' ' + className : '')} ref={rootRef}>
       <button
         ref={btnRef} id={id} type="button"
         className={'input select-button' + (open ? ' is-open' : '')}
@@ -97,7 +101,7 @@ export default function Select({ value, options, onChange, id, ...aria }: Props)
         onClick={() => (open ? setOpen(false) : openList())}
         onKeyDown={onKeyDown}
       >
-        <span className="select-value">{value}</span>
+        <span className="select-value">{label(value)}</span>
         <svg className="select-chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
       </button>
       {open && (
@@ -110,7 +114,7 @@ export default function Select({ value, options, onChange, id, ...aria }: Props)
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => choose(i)}
             >
-              <span>{o}</span>
+              <span>{label(o)}</span>
               {o === value && (
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
               )}
