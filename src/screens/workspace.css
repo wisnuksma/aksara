@@ -84,9 +84,9 @@
   white-space: nowrap; overflow: hidden;
 }
 .save { display: inline-flex; align-items: center; gap: 6px; }
-.save-dot { width: 7px; height: 7px; border-radius: 50%; background: #7C9A6A; }
+.save-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
 .save-dirty .save-dot, .save-saving .save-dot { background: var(--gold); }
-.save-error { color: #B23A2E; font-weight: 500; }
+.save-error { color: var(--danger); font-weight: 500; }
 .save-error button {
   border: 0; background: none; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; font: inherit;
 }
@@ -129,19 +129,19 @@
   position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 30;
   padding: 14px; border-radius: 12px;
   background: var(--paper); color: var(--text); border: 1px solid var(--line-2);
-  box-shadow: 0 14px 36px rgba(0,0,0,.35);
+  box-shadow: var(--shadow-pop);
   display: flex; flex-direction: column; gap: 8px;
 }
 .target-pop label { font-weight: 600; }
 .target-row { display: flex; gap: 6px; }
 .target-row input {
   flex: 1; min-width: 0; height: 34px; padding: 0 10px; border-radius: 8px;
-  border: 1px solid var(--line-2); background: #fff; color: var(--text); font: inherit; outline: none;
+  border: 1px solid var(--line-2); background: var(--field); color: var(--text); font: inherit; outline: none;
 }
 .target-row input:focus { border-color: var(--gold-text); }
 .target-row button {
   height: 34px; padding: 0 12px; border: 0; border-radius: 8px; cursor: pointer;
-  background: var(--ink); color: #F0DDB3; font: inherit; font-weight: 600;
+  background: var(--strong); color: var(--strong-text); font: inherit; font-weight: 600;
 }
 .target-hint { font-size: 11px; color: var(--text-3); }
 
@@ -175,8 +175,8 @@
   position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 40;
   display: flex; align-items: center; gap: 8px;
   padding: 6px 8px 6px 14px; border-radius: 999px;
-  background: rgba(247, 241, 228, .92); border: 1px solid var(--line);
-  color: var(--text-3); font-size: 12px; box-shadow: 0 6px 20px rgba(42,38,32,.08);
+  background: var(--pill-bg); border: 1px solid var(--line);
+  color: var(--text-3); font-size: 12px; box-shadow: var(--shadow-soft);
   opacity: .55; transition: opacity .2s;
 }
 .focus-pill:hover, .focus-pill:focus-within { opacity: 1; }

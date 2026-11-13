@@ -13,8 +13,8 @@
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   font-size: 14px;
 }
-.tb-btn:hover:not(:disabled) { background: #EFE5CF; }
-.tb-btn.is-active { background: #E9DCC0; color: var(--text); }
+.tb-btn:hover:not(:disabled) { background: var(--hover); }
+.tb-btn.is-active { background: var(--pressed); color: var(--text); }
 .tb-btn:disabled { opacity: .35; cursor: default; }
 .tb-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
 .tb-b b { font-weight: 700; }
@@ -33,7 +33,7 @@
   height: 30px; border: 0; background: transparent; padding: 0 8px 0 10px; border-radius: 7px;
   gap: 6px; box-shadow: none;
 }
-.tb-select .select-button:hover, .tb-select .select-button.is-open { background: #EFE5CF; box-shadow: none; }
+.tb-select .select-button:hover, .tb-select .select-button.is-open { background: var(--hover); box-shadow: none; }
 .tb-select .select-list { min-width: 150px; right: auto; }
 .tb-style .select-button { width: 128px; }
 .tb-zoom .select-list { min-width: 96px; left: auto; right: 0; }
@@ -46,7 +46,7 @@
 .page {
   max-width: 816px; width: 100%; min-height: 1056px; flex-shrink: 0;
   background: var(--paper); border-radius: 6px;
-  box-shadow: 0 1px 0 rgba(42,38,32,.04), 0 18px 40px rgba(42,38,32,.10);
+  box-shadow: var(--shadow-page);
   padding: 80px 96px 96px;
   cursor: text;
 }
@@ -66,7 +66,7 @@
 .manuscript blockquote { margin: 0 0 14px; padding-left: 18px; border-left: 3px solid var(--line-2); color: var(--text-2); }
 .manuscript ::selection { background: rgba(201,164,92,.32); }
 .manuscript p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder); float: left; height: 0; pointer-events: none; color: #B3A88F;
+  content: attr(data-placeholder); float: left; height: 0; pointer-events: none; color: var(--placeholder);
 }
 
 @media (max-width: 900px) {
@@ -88,7 +88,7 @@ textarea.page-title {
   border: 0; outline: none; padding: 0; background: transparent; color: var(--text);
   border-radius: 4px;
 }
-textarea.page-title::placeholder { color: #A39C8C; }
+textarea.page-title::placeholder { color: var(--placeholder); }
 textarea.page-title:hover { box-shadow: 0 0 0 6px rgba(201,164,92,.08); background: rgba(201,164,92,.08); }
 textarea.page-title:focus { box-shadow: none; background: transparent; }
 

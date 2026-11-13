@@ -29,7 +29,7 @@ kbd { font-family: inherit; }
 /* Pemberitahuan singkat di bawah layar */
 .toast {
   position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
-  background: var(--ink); color: var(--ink-text);
+  background: var(--ink); color: var(--ink-text); border: 1px solid var(--ink-border);
   padding: 10px 16px; border-radius: 10px; font-size: 13px;
   box-shadow: 0 8px 24px rgba(0,0,0,.25);
   z-index: 100;
@@ -46,6 +46,6 @@ kbd { font-family: inherit; }
 .btn:disabled { opacity: .6; cursor: default; }
 .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .btn-small { height: auto; padding: 5px 10px; border-radius: 7px; background: var(--paper); font-weight: 400; }
-.btn-primary { background: var(--ink); border-color: var(--ink); color: #F0DDB3; font-weight: 600; padding: 0 20px; }
-.btn-primary:hover:not(:disabled) { background: #272B3D; }
+.btn-primary { background: var(--strong); border-color: var(--strong); color: var(--strong-text); font-weight: 600; padding: 0 20px; }
+.btn-primary:hover:not(:disabled) { background: var(--strong-hover); }
 

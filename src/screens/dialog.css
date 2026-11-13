@@ -17,7 +17,7 @@
 .dialog-head p { margin: 0; color: var(--text-3); }
 .dialog-body { padding: 20px 32px; display: flex; flex-direction: column; gap: 20px; }
 .dialog-foot {
-  padding: 18px 32px; border-top: 1px solid #EDE4D0; background: #FBF6EC;
+  padding: 18px 32px; border-top: 1px solid var(--dialog-foot-line); background: var(--dialog-foot);
   display: flex; justify-content: flex-end; gap: 10px;
 }
 
@@ -30,17 +30,17 @@ legend.field-label { margin-bottom: 8px; }
 .input {
   height: 42px; padding: 0 14px; width: 100%;
   border: 1px solid var(--line-2); border-radius: 10px;
-  background: #FFFFFF; color: var(--text); font: inherit; outline: none;
+  background: var(--field); color: var(--text); font: inherit; outline: none;
 }
 .input:focus { border-color: var(--gold-text); box-shadow: 0 0 0 3px rgba(201,164,92,.25); }
 .input-serif { font-family: var(--font-text); font-size: 16px; }
-.input::placeholder { color: #A89E8A; }
+.input::placeholder { color: var(--placeholder); }
 
 .choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .choice {
   display: flex; flex-direction: column; gap: 6px;
   padding: 14px; border-radius: 12px; cursor: pointer;
-  border: 1px solid var(--line-2); background: #FFFFFF;
+  border: 1px solid var(--line-2); background: var(--field);
   /* border 2px saat dipilih tanpa menggeser isi */
   outline: 1px solid transparent;
 }
@@ -63,7 +63,7 @@ legend.field-label { margin-bottom: 8px; }
 
 .dialog-error {
   margin: 0; padding: 10px 12px; border-radius: 10px;
-  background: #F6E1DC; color: #8E2C22; line-height: 1.5;
+  background: var(--danger-bg); color: var(--danger-text); line-height: 1.5;
 }
 
 @media (max-width: 560px) {

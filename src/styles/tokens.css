@@ -1,6 +1,8 @@
 /* Token warna "Perkamen & Tinta" (lihat CLAUDE.md bagian 4).
-   Mode gelap ditambahkan pada langkah "Dark mode otomatis". */
+   Mode gelap mengikuti setelan Appearance macOS (prefers-color-scheme). */
 :root {
+  color-scheme: light dark;
+
   /* Area gelap (sidebar, header) */
   --ink: #1B1E2B;
   --ink-card: #23273A;
@@ -26,8 +28,63 @@
   --text-2: #3D372D;
   --text-3: #6E6555;
 
+  /* Turunan untuk area terang */
+  --hover: #EFE5CF;
+  --pressed: #E9DCC0;
+  --field: #FFFFFF;
+  --placeholder: #A89E8A;
+  --strong: #1B1E2B;          /* tombol utama */
+  --strong-hover: #272B3D;
+  --strong-text: #F0DDB3;
+  --danger: #B23A2E;
+  --danger-bg: #F6E1DC;
+  --danger-text: #8E2C22;
+  --ok: #7C9A6A;
+  --dialog-foot: #FBF6EC;
+  --dialog-foot-line: #EDE4D0;
+  --empty-bg: rgba(255,251,243,.5);
+  --pill-bg: rgba(247,241,228,.92);
+  --shadow-page: 0 1px 0 rgba(42,38,32,.04), 0 18px 40px rgba(42,38,32,.10);
+  --shadow-pop: 0 14px 36px rgba(42,38,32,.18), 0 2px 6px rgba(42,38,32,.08);
+  --shadow-soft: 0 6px 20px rgba(42,38,32,.08);
+
   /* Tipografi */
   --font-ui: Inter, system-ui, -apple-system, sans-serif;
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-text: Literata, Georgia, serif;
+}
+
+/* Mode gelap: sidebar tetap; area naskah berganti (CLAUDE.md bagian 4). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --gold-text: #D4B26C;
+    --desk: #13151E;
+    --paper: #1E2130;
+    --panel: #181B26;
+    --line: #2C3044;
+    --line-2: #363B52;
+    --line-dashed: #363B52;
+    --text: #E4DED0;
+    --text-2: #C9C3B5;
+    --text-3: #A39C8C;
+
+    --hover: #262A3B;
+    --pressed: #2E3349;
+    --field: #171A25;
+    --placeholder: #6F6A60;
+    --strong: #363B52;
+    --strong-hover: #41476A;
+    --strong-text: #F0DDB3;
+    --danger: #F08A7C;
+    --danger-bg: #4A2A2D;
+    --danger-text: #F3B2A8;
+    --ok: #8FB07C;
+    --dialog-foot: #1A1D29;
+    --dialog-foot-line: #2C3044;
+    --empty-bg: rgba(30,33,48,.5);
+    --pill-bg: rgba(24,27,38,.92);
+    --shadow-page: 0 1px 0 rgba(0,0,0,.2), 0 18px 40px rgba(0,0,0,.35);
+    --shadow-pop: 0 16px 36px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.2);
+    --shadow-soft: 0 6px 20px rgba(0,0,0,.3);
+  }
 }
