@@ -6,6 +6,8 @@ import BibleSummary from '../components/BibleSummary'
 import World, { type WorldTarget } from './World'
 import { bibleTerms, entryAliases, entryFaction, entryName, factionColor, findEntry, KIND_LABEL } from '../lib/bible'
 import type { EntryCard } from '../components/Editor'
+import SceneInspector from '../components/SceneInspector'
+import type { FrontMatter } from '../lib/frontmatter'
 import * as ops from '../lib/binderOps'
 import { chapterLabel, nextChapterTitle, saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
 import { loadStats, saveStats, todayKey, type Stats } from '../lib/stats'
@@ -254,6 +256,26 @@ export default function Workspace({ project, onClose }: Props) {
     if (e) openWorld({ kind: e.kind, file: e.file })
   }, [p]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  /** Ubah detail adegan (front matter) lalu simpan otomatis. */
+  function changeMeta(patch: FrontMatter) {
+    const hit = find(activeIdRef.current)
+    if (!hit) return
+    Object.assign(hit.scene.meta, patch)
+    dirty.current = hit
+    setSave('dirty')
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(flush, 800)
+    bump()
+  }
+  const metaSuggestions = useMemo(() => {
+    const alur = new Set<string>(), waktu = new Set<string>()
+    for (const c of p.chapters) for (const s of c.scenes) {
+      if (s.meta.alur) alur.add(String(s.meta.alur))
+      if (s.meta.waktu_cerita) waktu.add(String(s.meta.waktu_cerita))
+    }
+    return { alur: [...alur], waktu: [...waktu] }
+  }, [p, version]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const registerWorldNew = useCallback((fn: () => void) => { worldNew.current = fn }, [])
   function openWorld(t: WorldTarget) {
     flush()
@@ -419,12 +441,12 @@ export default function Workspace({ project, onClose }: Props) {
                     <p className="side-soon">Asisten AI (ide saat buntu, periksa ejaan, cari adegan) hadir di Fase 3.</p>
                   </div>
                 )}
-                {tab === 'adegan' && (
-                  <div className="side-note">
-                    <span className="label">Detail adegan</span>
-                    <p>Sinopsis, status, POV, lokasi, waktu, dan tokoh akan bisa diisi di sini pada Fase 2.</p>
-                  </div>
-                )}
+                {tab === 'adegan' && (active ? (
+                  <SceneInspector key={activeId!} meta={active.scene.meta} bible={p.bible} suggestions={metaSuggestions}
+                    getText={() => getBody.current?.() ?? active.scene.body} onChange={changeMeta} />
+                ) : (
+                  <div className="side-note"><p>Pilih adegan di binder untuk melihat detailnya.</p></div>
+                ))}
                 {tab === 'catatan' && (
                   <div className="side-note">
                     <span className="label">Catatan bab</span>
