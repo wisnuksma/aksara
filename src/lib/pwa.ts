@@ -16,7 +16,10 @@ let update: ((reload?: boolean) => Promise<void>) | null = null
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   update = registerSW({
     onNeedRefresh: () => emit({ needRefresh: true }),
-    onOfflineReady: () => emit({ offlineReady: true }),
+    onOfflineReady: () => {
+      emit({ offlineReady: true })
+      setTimeout(() => emit({ offlineReady: false }), 6000) // hanya info, hilang sendiri
+    },
   })
 }
 

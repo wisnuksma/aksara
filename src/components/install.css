@@ -9,7 +9,6 @@
 .install-desc { color: var(--text-3); line-height: 1.5; font-size: 12px; }
 .install-desc b { color: var(--text-2); font-weight: 600; }
 .install-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
-.btn-sm { height: 32px; padding: 0 14px; border-radius: 8px; }
 .install-later {
   border: 0; background: none; cursor: pointer; padding: 2px 4px;
   color: var(--text-3); font: inherit; font-size: 12px;
@@ -23,3 +22,4 @@
   background: var(--gold); color: var(--ink);
 }
 .update-toast button.ghost { background: transparent; color: var(--ink-text-2); font-weight: 400; }
+.toast.update-toast { bottom: 84px; }

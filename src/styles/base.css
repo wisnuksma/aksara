@@ -74,3 +74,4 @@ kbd { font-family: inherit; }
   .pr-scene p:first-child, .pr-sep + .pr-scene p:first-child, h3 + .pr-scene p:first-child { text-indent: 0; }
   .pr-sep { text-align: center; margin: 14pt 0; text-indent: 0 !important; }
 }
+.btn-sm { height: 32px; padding: 0 14px; border-radius: 8px; }

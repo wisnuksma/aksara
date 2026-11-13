@@ -191,3 +191,4 @@
   padding: 4px 8px; border-radius: 999px; display: flex; align-items: center; gap: 6px;
 }
 .focus-pill button:hover { background: var(--line); }
+.side-stack { display: flex; flex-direction: column; gap: 22px; }

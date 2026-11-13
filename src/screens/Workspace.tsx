@@ -8,6 +8,9 @@ import { bibleTerms, entryAliases, entryFaction, entryName, factionColor, findEn
 import type { EntryCard } from '../components/Editor'
 import SceneInspector from '../components/SceneInspector'
 import ExportDialog from '../components/ExportDialog'
+import Snapshots from '../components/Snapshots'
+import { latestSnapshotBody, listSnapshots, writeSnapshot } from '../lib/snapshots'
+import { countMarkdownWords } from '../lib/words'
 import type { FrontMatter } from '../lib/frontmatter'
 import * as ops from '../lib/binderOps'
 import { chapterLabel, nextChapterTitle, saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
@@ -50,6 +53,11 @@ export default function Workspace({ project, onClose }: Props) {
   modeRef.current = mode
   const [targetOpen, setTargetOpen] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
+  const [snapRefresh, setSnapRefresh] = useState(0)
+  const [restoreN, setRestoreN] = useState(0)
+  // Isi adegan saat dibuka (untuk tahu apakah ada perubahan → snapshot otomatis)
+  const openedBody = useRef(new Map<string, string>())
+  const baselineChecked = useRef(new Set<string>())
   const [editing, setEditing] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -83,6 +91,24 @@ export default function Workspace({ project, onClose }: Props) {
       if (hit) setExpanded(new Set([hit.chapter.folder]))
     })
   }, [p, find, firstId])
+
+  useEffect(() => {
+    const hit = find(activeId)
+    if (hit && !openedBody.current.has(activeId!)) openedBody.current.set(activeId!, hit.scene.body)
+  }, [activeId, find])
+
+  /** Snapshot otomatis bila adegan berubah sejak dibuka (dipanggil saat meninggalkannya). */
+  const autoSnapshot = useCallback(async (hit: { chapter: Chapter; scene: Scene } | null) => {
+    if (!hit) return
+    const id = sceneId(hit.chapter, hit.scene)
+    const opened = openedBody.current.get(id)
+    openedBody.current.delete(id)
+    if (opened === undefined || opened === hit.scene.body) return
+    try {
+      if ((await latestSnapshotBody(p, hit.scene)) !== hit.scene.body) await writeSnapshot(p, hit.scene, 'otomatis')
+      setSnapRefresh((n) => n + 1)
+    } catch (e) { console.error('snapshot gagal', e) }
+  }, [p])
 
   /** Simpan perubahan yang tertunda sekarang juga. Aman dipanggil berkali-kali. */
   const flush = useCallback(() => {
@@ -124,7 +150,17 @@ export default function Workspace({ project, onClose }: Props) {
     setSave('dirty')
     window.clearTimeout(timer.current)
     timer.current = window.setTimeout(flush, 1000)
-  }, [activeId, find, flush])
+    // Perubahan pertama pada adegan yang belum punya versi: simpan versi aslinya dulu
+    const key = activeId!
+    if (!baselineChecked.current.has(key)) {
+      baselineChecked.current.add(key)
+      const opened = openedBody.current.get(key)
+      if (opened && opened.trim()) {
+        listSnapshots(p, hit.scene).then((l) => l.length ? null : writeSnapshot(p, hit.scene, 'awal', '', opened))
+          .then(() => setSnapRefresh((n) => n + 1)).catch(() => {})
+      }
+    }
+  }, [activeId, find, flush, p])
 
   const onReady = useCallback((fn: () => string) => { getBody.current = fn }, [])
 
@@ -167,7 +203,6 @@ export default function Workspace({ project, onClose }: Props) {
   function openScene(c: Chapter, s: Scene) {
     const id = sceneId(c, s)
     if (id === activeId) return
-    flush()
     selectScene(c, s)
   }
 
@@ -204,6 +239,9 @@ export default function Workspace({ project, onClose }: Props) {
   const expand = (c: Chapter) => setExpanded((prev) => new Set(prev).add(c.folder))
 
   function selectScene(c: Chapter, s: Scene) {
+    // Adegan yang ditinggalkan: simpan, lalu snapshot otomatis bila berubah
+    const prev = find(activeIdRef.current)
+    if (prev && prev.scene !== s) flush().then(() => autoSnapshot(prev))
     getBody.current = null
     const id = sceneId(c, s)
     setActiveId(id)
@@ -278,6 +316,29 @@ export default function Workspace({ project, onClose }: Props) {
     return { alur: [...alur], waktu: [...waktu] }
   }, [p, version]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  async function saveManualSnapshot(label: string) {
+    const hit = find(activeIdRef.current)
+    if (!hit) return
+    await flush()
+    await writeSnapshot(p, hit.scene, 'manual', label)
+    openedBody.current.set(sceneId(hit.chapter, hit.scene), hit.scene.body)
+    setToast('Versi adegan disimpan.')
+  }
+  async function restoreSnapshot(body: string) {
+    const hit = find(activeIdRef.current)
+    if (!hit) return
+    await flush()
+    await writeSnapshot(p, hit.scene, 'sebelum-pulih')
+    hit.scene.body = body
+    hit.scene.words = countMarkdownWords(body)
+    await saveScene(p, hit.chapter, hit.scene)
+    openedBody.current.set(sceneId(hit.chapter, hit.scene), body)
+    getBody.current = null
+    setRestoreN((n) => n + 1)
+    setSnapRefresh((n) => n + 1)
+    setToast('Versi dipulihkan. Isi sebelumnya disimpan sebagai versi “Sebelum dipulihkan”.')
+  }
+
   const registerWorldNew = useCallback((fn: () => void) => { worldNew.current = fn }, [])
   function openWorld(t: WorldTarget) {
     flush()
@@ -299,6 +360,7 @@ export default function Workspace({ project, onClose }: Props) {
 
   async function close() {
     await flush()
+    await autoSnapshot(find(activeId))
     onClose()
   }
 
@@ -383,7 +445,7 @@ export default function Workspace({ project, onClose }: Props) {
           <div className="ws-center">
             {active ? (
               <Editor
-                key={activeId!}
+                key={activeId! + '#' + restoreN}
                 markdown={active.scene.body}
                 heading={`${chapterLabel(p, active.chapter)} · Adegan ${sceneIndex + 1}`}
                 title={String(active.scene.meta.judul || '')}
@@ -448,8 +510,13 @@ export default function Workspace({ project, onClose }: Props) {
                   </div>
                 )}
                 {tab === 'adegan' && (active ? (
-                  <SceneInspector key={activeId!} meta={active.scene.meta} bible={p.bible} suggestions={metaSuggestions}
-                    getText={() => getBody.current?.() ?? active.scene.body} onChange={changeMeta} />
+                  <div className="side-stack">
+                    <SceneInspector key={activeId!} meta={active.scene.meta} bible={p.bible} suggestions={metaSuggestions}
+                      getText={() => getBody.current?.() ?? active.scene.body} onChange={changeMeta} />
+                    <Snapshots key={'s' + activeId} project={p} scene={active.scene} refresh={snapRefresh}
+                      getCurrent={() => getBody.current?.() ?? active.scene.body}
+                      onSaveManual={saveManualSnapshot} onRestore={restoreSnapshot} />
+                  </div>
                 ) : (
                   <div className="side-note"><p>Pilih adegan di binder untuk melihat detailnya.</p></div>
                 ))}
