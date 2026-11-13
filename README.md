@@ -26,6 +26,12 @@ Setelah terpasang, Aksara bisa dibuka dari Dock walau Terminal ditutup dan tanpa
 Jalankan lagi perintah di atas dengan zip baru, buka Aksara: akan muncul
 "Versi baru Aksara tersedia" → klik **Muat ulang**.
 
+## Versi online (GitHub Pages)
+
+Setiap perubahan yang dikirim ke cabang `main` otomatis dirakit dan dipasang oleh
+`.github/workflows/pages.yml`. Buka alamat GitHub Pages di Chrome lalu pasang di Dock
+seperti biasa. Pembaruan masuk sendiri (muncul tombol **Muat ulang**).
+
 ## Untuk pengembangan
 
 `npm run dev` (http://localhost:5173) — tanpa service worker, berubah otomatis saat kode diubah.
