@@ -1,17 +1,19 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
 import {
-  buildContext, chat, checkConsistency, checkSpelling, findScenes, forgetApiKey, friendlyError, loadApiKey, makeClient,
-  RefusalError, saveApiKey, sceneDigest, type ChatTurn, type Finding, type SceneCtx, type SceneHit, type SpellSuggestion,
+  buildContext, chat, checkConsistency, checkSpelling, DEFAULT_MODELS, findScenes, forgetApiKey, friendlyError, loadApiKey,
+  loadModels, makeClient, modelName, MODELS, RefusalError, saveApiKey, saveModels, sceneDigest, TASK_LABEL,
+  type AiTask, type ChatTurn, type Finding, type SceneCtx, type SceneHit, type SpellSuggestion,
 } from '../lib/ai'
+import Select from './Select'
 import type { Project } from '../lib/project'
 import './assistant.css'
 
 export type AItem =
   | { kind: 'user'; text: string }
-  | { kind: 'assistant'; text: string; pending?: boolean }
-  | { kind: 'spell'; count: number }
-  | { kind: 'hits'; query: string; hits: SceneHit[] }
-  | { kind: 'findings'; items: Finding[] }
+  | { kind: 'assistant'; text: string; pending?: boolean; model?: string }
+  | { kind: 'spell'; count: number; model?: string }
+  | { kind: 'hits'; query: string; hits: SceneHit[]; model?: string }
+  | { kind: 'findings'; items: Finding[]; model?: string }
   | { kind: 'error'; text: string }
   | { kind: 'note'; text: string }
 
@@ -36,11 +38,12 @@ export default function Assistant(props: Props) {
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<'chat' | 'search'>('chat')
   const [busy, setBusy] = useState<Busy>(null)
+  const [models, setModels] = useState<Record<AiTask, string>>(DEFAULT_MODELS)
   const abort = useRef<AbortController | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  useEffect(() => { loadApiKey().then((k) => setApiKey(k || null)) }, [])
+  useEffect(() => { loadApiKey().then((k) => setApiKey(k || null)); loadModels().then(setModels) }, [])
   useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [items])
   useEffect(() => () => abort.current?.abort(), [])
 
@@ -49,7 +52,8 @@ export default function Assistant(props: Props) {
 
   if (apiKey === undefined) return null
   if (!apiKey || settings) {
-    return <KeySetup hasKey={!!apiKey} onSave={async (k) => { await saveApiKey(k); setApiKey(k); setSettings(false) }}
+    return <KeySetup hasKey={!!apiKey} models={models} onModels={(m) => { setModels(m); saveModels(m) }}
+      onSave={async (k) => { await saveApiKey(k); setApiKey(k); setSettings(false) }}
       onForget={async () => { await forgetApiKey(); setApiKey(null); setSettings(false) }}
       onCancel={apiKey ? () => setSettings(false) : undefined} />
   }
@@ -80,13 +84,14 @@ export default function Assistant(props: Props) {
     const sc = getScene()
     if (!sc) return
     const next: AItem[] = [...items, { kind: 'user', text }]
-    setItems(() => [...next, { kind: 'assistant', text: '', pending: true }])
+    const model = models.ide
+    setItems(() => [...next, { kind: 'assistant', text: '', pending: true, model }])
     await run('chat', async (signal) => {
       const { text: ctx } = buildContext(p, sc)
-      const done = await chat(client, ctx, history(next), (t) => {
+      const done = await chat(client, model, ctx, history(next), (t: string) => {
         setItems((prev) => prev.map((x, i) => (i === prev.length - 1 && x.kind === 'assistant' ? { ...x, text: t } : x)))
       }, signal)
-      setItems((prev) => prev.map((x, i) => (i === prev.length - 1 && x.kind === 'assistant' ? { kind: 'assistant', text: done } : x)))
+      setItems((prev) => prev.map((x, i) => (i === prev.length - 1 && x.kind === 'assistant' ? { kind: 'assistant', text: done, model } : x)))
     })
   }
 
@@ -108,9 +113,9 @@ export default function Assistant(props: Props) {
     if (!sc.body.trim()) { setItems((prev) => [...prev, { kind: 'note', text: 'Adegan ini masih kosong — belum ada yang bisa diperiksa.' }]); return }
     setItems((prev) => [...prev, { kind: 'user', text: 'Periksa ejaan adegan ini.' }])
     await run('spell', async (signal) => {
-      const list = await checkSpelling(client, buildContext(p, sc).text, signal)
+      const list = await checkSpelling(client, models.ejaan, buildContext(p, sc).text, signal)
       props.onSpelling(list)
-      setItems((prev) => [...prev, { kind: 'spell', count: list.length }])
+      setItems((prev) => [...prev, { kind: 'spell', count: list.length, model: models.ejaan }])
     })
   }
 
@@ -118,8 +123,8 @@ export default function Assistant(props: Props) {
     setItems((prev) => [...prev, { kind: 'user', text: `Cari adegan: ${query}` }])
     await run('search', async (signal) => {
       const sc = getScene()
-      const hits = await findScenes(client, sceneDigest(p, sc ? { id: `${sc.chapter.folder}/${sc.scene.file}`, body: sc.body } : undefined), query, signal)
-      setItems((prev) => [...prev, { kind: 'hits', query, hits }])
+      const hits = await findScenes(client, models.cari, sceneDigest(p, sc ? { id: `${sc.chapter.folder}/${sc.scene.file}`, body: sc.body } : undefined), query, signal)
+      setItems((prev) => [...prev, { kind: 'hits', query, hits, model: models.cari }])
     })
   }
 
@@ -128,8 +133,8 @@ export default function Assistant(props: Props) {
     if (!sc) return
     setItems((prev) => [...prev, { kind: 'user', text: 'Cek konsistensi adegan ini dengan story bible.' }])
     await run('consistency', async (signal) => {
-      const found = await checkConsistency(client, buildContext(p, sc).text, signal)
-      setItems((prev) => [...prev, { kind: 'findings', items: found }])
+      const found = await checkConsistency(client, models.konsistensi, buildContext(p, sc).text, signal)
+      setItems((prev) => [...prev, { kind: 'findings', items: found, model: models.konsistensi }])
     })
   }
 
@@ -138,10 +143,10 @@ export default function Assistant(props: Props) {
   return (
     <div className="ai">
       <div className="ai-quick">
-        <button onClick={stuck} disabled={disabled}>Saya buntu</button>
-        <button onClick={spelling} disabled={disabled}>Periksa ejaan</button>
-        <button onClick={() => { setMode('search'); inputRef.current?.focus() }} disabled={!!busy} className={mode === 'search' ? 'is-on' : ''}>Cari adegan</button>
-        <button onClick={consistency} disabled={disabled}>Cek konsistensi</button>
+        <button onClick={stuck} disabled={disabled} title={`Memakai ${modelName(models.ide)}`}>Saya buntu</button>
+        <button onClick={spelling} disabled={disabled} title={`Memakai ${modelName(models.ejaan)}`}>Periksa ejaan</button>
+        <button onClick={() => { setMode('search'); inputRef.current?.focus() }} disabled={!!busy} className={mode === 'search' ? 'is-on' : ''} title={`Memakai ${modelName(models.cari)}`}>Cari adegan</button>
+        <button onClick={consistency} disabled={disabled} title={`Memakai ${modelName(models.konsistensi)}`}>Cek konsistensi</button>
       </div>
 
       <div className="ai-list" ref={listRef} aria-live="polite">
@@ -182,7 +187,16 @@ export default function Assistant(props: Props) {
   )
 }
 
-function Item({ it, onOpenScene, onShowText, sceneTitle }: { it: AItem } & Props) {
+function Item(props: { it: AItem } & Props) {
+  const it = props.it
+  const body = ItemBody(props)
+  if ('model' in it && it.model && !(it.kind === 'assistant' && it.pending)) {
+    return <div className="ai-with-model">{body}<span className="ai-model">{modelName(it.model)}</span></div>
+  }
+  return body
+}
+
+function ItemBody({ it, onOpenScene, onShowText, sceneTitle }: { it: AItem } & Props) {
   switch (it.kind) {
     case 'user': return <div className="ai-user">{it.text}</div>
     case 'assistant': return <div className="ai-answer">{it.text ? <Markdown text={it.text} /> : <span className="ai-dots" aria-label="Menulis jawaban"><i /><i /><i /></span>}</div>
@@ -254,7 +268,10 @@ function Markdown({ text }: { text: string }) {
   )
 }
 
-function KeySetup({ hasKey, onSave, onForget, onCancel }: { hasKey: boolean; onSave: (k: string) => void; onForget: () => void; onCancel?: () => void }) {
+function KeySetup({ hasKey, models, onModels, onSave, onForget, onCancel }: {
+  hasKey: boolean; models: Record<AiTask, string>; onModels: (m: Record<AiTask, string>) => void
+  onSave: (k: string) => void; onForget: () => void; onCancel?: () => void
+}) {
   const [k, setK] = useState('')
   const valid = /^sk-ant-[\w-]{20,}$/.test(k.trim())
   return (
@@ -263,6 +280,20 @@ function KeySetup({ hasKey, onSave, onForget, onCancel }: { hasKey: boolean; onS
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.6" strokeLinejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /></svg>
       </span>
       <span className="side-empty-title">{hasKey ? 'Pengaturan Asisten' : 'Hubungkan Asisten AI'}</span>
+      {hasKey && (
+        <div className="ai-models">
+          <span className="label">Model per tugas</span>
+          {(Object.keys(TASK_LABEL) as AiTask[]).map((t) => (
+            <div key={t} className="ai-model-row">
+              <span>{TASK_LABEL[t]}</span>
+              <Select value={models[t]} options={MODELS.map((m) => m.id)} label={modelName}
+                onChange={(v) => onModels({ ...models, [t]: v })} aria-label={`Model untuk ${TASK_LABEL[t]}`} />
+            </div>
+          ))}
+          <p className="ai-model-note">Opus: $4/$20 · Sonnet: $2/$10 · Haiku: $0,10/$0,50 per juta token (masuk/keluar). Ide cerita paling terasa bedanya di Opus; ejaan dan konsistensi sudah sangat baik di Sonnet; Cari adegan cukup Haiku.</p>
+          <button className="ai-forget ai-reset" onClick={() => onModels({ ...DEFAULT_MODELS })}>Kembalikan ke saran bawaan</button>
+        </div>
+      )}
       <p>Asisten memakai <b>Claude</b> dari Anthropic dengan API key milik Anda sendiri. Biaya dihitung per pemakaian di akun Anthropic Anda.</p>
       <ol>
         <li>Buka <b>console.anthropic.com</b> → <b>API Keys</b> → <b>Create Key</b>.</li>

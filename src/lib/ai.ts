@@ -5,9 +5,41 @@ import { del, get, set } from 'idb-keyval'
 import { entryAliases, entryFaction, entryName, KIND_LABEL, KINDS, type Entry } from './bible'
 import { chapterLabel, sceneId, type Chapter, type Project, type Scene } from './project'
 
-export const MODEL = 'claude-opus-5-5'
 const KEY = 'anthropic-api-key'
-const BETAS = ['server-side-fallback-2026-07-01']
+
+// ---------------------------------------------------------------- Model per tugas
+
+export type AiTask = 'ide' | 'ejaan' | 'konsistensi' | 'cari'
+export const TASK_LABEL: Record<AiTask, string> = {
+  ide: 'Ide cerita & obrolan (Saya buntu)',
+  ejaan: 'Periksa ejaan',
+  konsistensi: 'Cek konsistensi',
+  cari: 'Cari adegan',
+}
+export const MODELS: { id: string; name: string; note: string }[] = [
+  { id: 'claude-opus-5-5', name: 'Opus 5.5', note: 'paling cerdas · $4 / $20 per juta token' },
+  { id: 'claude-sonnet-5-5', name: 'Sonnet 5.5', note: 'seimbang · $2 / $10 per juta token' },
+  { id: 'claude-haiku-5-5', name: 'Haiku 5.5', note: 'paling hemat · $0,10 / $0,50 per juta token' },
+]
+export const modelName = (id: string) => MODELS.find((m) => m.id === id)?.name ?? id
+export const DEFAULT_MODELS: Record<AiTask, string> = {
+  ide: 'claude-opus-5-5',
+  ejaan: 'claude-sonnet-5-5',
+  konsistensi: 'claude-sonnet-5-5',
+  cari: 'claude-haiku-5-5',
+}
+const ROUTES_KEY = 'anthropic-models'
+export const loadModels = async (): Promise<Record<AiTask, string>> =>
+  ({ ...DEFAULT_MODELS, ...((await get<Record<AiTask, string>>(ROUTES_KEY).catch(() => undefined)) ?? {}) })
+export const saveModels = (m: Record<AiTask, string>) => set(ROUTES_KEY, m)
+
+/** Parameter khusus model. Opus & Sonnet: model cadangan otomatis bila permintaan
+ *  ditolak pengklasifikasi keamanan. Haiku 5.5 tidak mendukung fallback server-side. */
+function modelParams(model: string) {
+  return model.startsWith('claude-haiku')
+    ? { model }
+    : { model, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const }
+}
 
 export const loadApiKey = () => get<string>(KEY).catch(() => undefined)
 export const saveApiKey = (k: string) => set(KEY, k.trim())
@@ -93,12 +125,10 @@ export class RefusalError extends Error {}
 export interface ChatTurn { role: 'user' | 'assistant'; text: string }
 
 /** Obrolan bebas dengan streaming. onText dipanggil dengan teks yang terus bertambah. */
-export async function chat(client: Anthropic, context: string, history: ChatTurn[], onText: (t: string) => void, signal?: AbortSignal) {
+export async function chat(client: Anthropic, model: string, context: string, history: ChatTurn[], onText: (t: string) => void, signal?: AbortSignal) {
   const stream = client.beta.messages.stream({
-    model: MODEL,
+    ...modelParams(model),
     max_tokens: 32000,
-    betas: BETAS,
-    fallbacks: 'default',
     output_config: { effort: 'medium' },
     system: [{ type: 'text', text: SYSTEM }, { type: 'text', text: context, cache_control: { type: 'ephemeral' } }],
     messages: history.slice(-12).map((t) => ({ role: t.role, content: t.text })),
@@ -111,12 +141,10 @@ export async function chat(client: Anthropic, context: string, history: ChatTurn
 }
 
 /** Permintaan dengan jawaban JSON terstruktur (ejaan, cari adegan, konsistensi). */
-async function structured<T>(client: Anthropic, system: string, context: string, task: string, schema: Record<string, unknown>, signal?: AbortSignal): Promise<T> {
+async function structured<T>(client: Anthropic, model: string, system: string, context: string, task: string, schema: Record<string, unknown>, signal?: AbortSignal): Promise<T> {
   const stream = client.beta.messages.stream({
-    model: MODEL,
+    ...modelParams(model),
     max_tokens: 32000,
-    betas: BETAS,
-    fallbacks: 'default',
     output_config: { effort: 'medium', format: { type: 'json_schema', schema } },
     system: [{ type: 'text', text: system }, { type: 'text', text: context, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: task }],
@@ -131,8 +159,8 @@ async function structured<T>(client: Anthropic, system: string, context: string,
 
 export interface SpellSuggestion { kutipan: string; ganti: string; alasan: string; jenis: 'ejaan' | 'kalimat' }
 
-export async function checkSpelling(client: Anthropic, context: string, signal?: AbortSignal): Promise<SpellSuggestion[]> {
-  const r = await structured<{ saran: SpellSuggestion[] }>(client, SYSTEM, context,
+export async function checkSpelling(client: Anthropic, model: string, context: string, signal?: AbortSignal): Promise<SpellSuggestion[]> {
+  const r = await structured<{ saran: SpellSuggestion[] }>(client, model, SYSTEM, context,
     `Periksa ejaan dan kalimat pada <naskah> adegan aktif menurut EYD edisi V / PUEBI.
 Untuk setiap masalah, beri:
 - kutipan: potongan teks PERSIS seperti tertulis di naskah (salin huruf demi huruf, termasuk tanda baca), sesingkat mungkin tapi unik — biasanya 1–6 kata;
@@ -186,8 +214,8 @@ export function sceneDigest(p: Project, current?: { id: string; body: string }):
   return `# Novel: ${p.data.judul}\n\n${out.join('\n\n')}`
 }
 
-export async function findScenes(client: Anthropic, digest: string, query: string, signal?: AbortSignal): Promise<SceneHit[]> {
-  const r = await structured<{ hasil: SceneHit[] }>(client, SYSTEM, digest,
+export async function findScenes(client: Anthropic, model: string, digest: string, query: string, signal?: AbortSignal): Promise<SceneHit[]> {
+  const r = await structured<{ hasil: SceneHit[] }>(client, model, SYSTEM, digest,
     `Cari adegan yang paling cocok dengan permintaan ini: "${query}".
 Kembalikan maksimal 5 adegan, paling cocok dulu. Untuk masing-masing:
 - adegan: nilai atribut id dari tag <adegan> (salin persis);
@@ -217,8 +245,8 @@ Jika tidak ada yang cocok, kembalikan daftar kosong.`,
 
 export interface Finding { kutipan: string; masalah: string; rujukan: string }
 
-export async function checkConsistency(client: Anthropic, context: string, signal?: AbortSignal): Promise<Finding[]> {
-  const r = await structured<{ temuan: Finding[] }>(client, SYSTEM, context,
+export async function checkConsistency(client: Anthropic, model: string, context: string, signal?: AbortSignal): Promise<Finding[]> {
+  const r = await structured<{ temuan: Finding[] }>(client, model, SYSTEM, context,
     `Periksa konsistensi <naskah> adegan aktif terhadap story bible dan detail adegan:
 nama/alias yang salah, faksi atau peran yang keliru, sifat fisik yang bertentangan, POV yang berganti tanpa sengaja, lokasi atau waktu yang tidak cocok.
 Untuk setiap temuan:
