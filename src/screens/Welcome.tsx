@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { RecentProject } from '../lib/recent'
 import { formatNumber, timeAgo } from '../lib/recent'
 import pena from '../assets/pena-aksara.png'
+import InstallCard from '../components/InstallCard'
 import './welcome.css'
 
 export type { Template } from '../lib/types'
@@ -108,9 +109,12 @@ export default function Welcome({ recent, onNew, onOpen, onImport, onOpenRecent 
           </div>
         </div>
 
+        <div className="welcome-bottom">
+        <InstallCard />
         <div className="welcome-tip">
           <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-text)" strokeWidth="1.6" strokeLinejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /></svg>
           <span>Punya ide tapi belum tahu mulai dari mana? Asisten AI bisa membantu menyusun premis dan kerangka bab.</span>
+        </div>
         </div>
       </section>
     </div>

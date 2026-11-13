@@ -1,0 +1,25 @@
+.install-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: 14px;
+  background: var(--paper); border: 1px solid var(--line);
+}
+.install-icon { flex: none; border-radius: 10px; }
+.install-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.install-title { font-weight: 600; color: var(--text); }
+.install-desc { color: var(--text-3); line-height: 1.5; font-size: 12px; }
+.install-desc b { color: var(--text-2); font-weight: 600; }
+.install-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+.btn-sm { height: 32px; padding: 0 14px; border-radius: 8px; }
+.install-later {
+  border: 0; background: none; cursor: pointer; padding: 2px 4px;
+  color: var(--text-3); font: inherit; font-size: 12px;
+}
+.install-later:hover { color: var(--text); }
+
+/* Pemberitahuan versi baru / siap offline */
+.update-toast { display: flex; align-items: center; gap: 12px; }
+.update-toast button {
+  border: 0; border-radius: 7px; padding: 5px 10px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600;
+  background: var(--gold); color: var(--ink);
+}
+.update-toast button.ghost { background: transparent; color: var(--ink-text-2); font-weight: 400; }

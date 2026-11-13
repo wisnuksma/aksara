@@ -6,6 +6,7 @@ import { listRecent, rememberProject, type RecentProject } from './lib/recent'
 import { loadProject, NotAProjectError, PermissionError, totalWords, type Project } from './lib/project'
 import { fsSupported } from './lib/fs'
 import type { Template } from './lib/types'
+import { usePwa } from './lib/pwa'
 
 export default function App() {
   const [recent, setRecent] = useState<RecentProject[]>([])
@@ -14,6 +15,7 @@ export default function App() {
   const [newDialog, setNewDialog] = useState<Template | null>(null)
   const [project, setProject] = useState<Project | null>(null)
   const [busy, setBusy] = useState(false)
+  const pwa = usePwa()
 
   const refreshRecent = useCallback(() => {
     listRecent().then(setRecent).catch(() => setRecent([]))
@@ -82,13 +84,29 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [project, handleNew, handleOpen, handleImport])
 
+  const updateBanner = (pwa.needRefresh || pwa.offlineReady) && (
+    <div className="toast update-toast" role="status">
+      {pwa.needRefresh ? <>
+        <span>Versi baru Aksara tersedia.</span>
+        <button onClick={pwa.reload}>Muat ulang</button>
+        <button className="ghost" onClick={pwa.dismiss}>Nanti</button>
+      </> : <>
+        <span>Aksara siap dipakai tanpa internet.</span>
+        <button className="ghost" onClick={pwa.dismiss}>Tutup</button>
+      </>}
+    </div>
+  )
+
   if (project) {
     return (
+      <>
       <Workspace
         key={project.data.id}
         project={project}
         onClose={() => { setProject(null); refreshRecent() }}
       />
+      {updateBanner}
+      </>
     )
   }
 
@@ -114,7 +132,7 @@ export default function App() {
           }}
         />
       )}
-      {toast && <div className="toast" role="status">{toast}</div>}
+      {toast ? <div className="toast" role="status">{toast}</div> : updateBanner}
     </>
   )
 }
