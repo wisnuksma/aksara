@@ -192,3 +192,8 @@
 }
 .focus-pill button:hover { background: var(--line); }
 .side-stack { display: flex; flex-direction: column; gap: 22px; }
+
+.ws-sugs { display: inline-flex; align-items: center; gap: 6px; }
+.ws-sug-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--danger); }
+.side-body:has(.ai) { overflow: hidden; display: flex; flex-direction: column; }
+.side-body:has(.ai) > .ai { flex: 1; height: auto; }

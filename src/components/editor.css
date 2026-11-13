@@ -136,3 +136,19 @@ textarea.page-title:focus { box-shadow: none; background: transparent; }
   border: 0; border-radius: 7px; padding: 5px 12px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600;
   background: var(--strong); color: var(--strong-text);
 }
+
+/* ---------- Saran ejaan dari Asisten ---------- */
+.manuscript .spell-mark {
+  text-decoration: underline wavy var(--danger); text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  background: var(--danger-bg); border-radius: 2px; cursor: pointer;
+}
+.sug-card { border-left-color: var(--danger) !important; gap: 8px; }
+.sug-kind { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--danger); }
+.sug-change { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-family: var(--font-text); font-size: 15px; }
+.sug-change s { color: var(--text-3); }
+.sug-change span { color: var(--text-3); }
+.sug-why { margin: 0; color: var(--text-2); line-height: 1.5; font-size: 13px; }
+.sug-actions { display: flex; gap: 8px; }
+.sug-actions button { flex: 1; height: 32px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 13px; }
+.sug-accept { border: 0; background: var(--strong); color: var(--strong-text); font-weight: 500; }
+.sug-ignore { border: 1px solid var(--line); background: transparent; color: var(--text); }

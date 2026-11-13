@@ -5,7 +5,8 @@ import Binder from '../components/Binder'
 import BibleSummary from '../components/BibleSummary'
 import World, { type WorldTarget } from './World'
 import { bibleTerms, entryAliases, entryFaction, entryName, factionColor, findEntry, KIND_LABEL } from '../lib/bible'
-import type { EntryCard } from '../components/Editor'
+import type { EditorApi, EntryCard, Suggestion } from '../components/Editor'
+import Assistant, { type AItem } from '../components/Assistant'
 import SceneInspector from '../components/SceneInspector'
 import ExportDialog from '../components/ExportDialog'
 import Snapshots from '../components/Snapshots'
@@ -53,6 +54,9 @@ export default function Workspace({ project, onClose }: Props) {
   modeRef.current = mode
   const [targetOpen, setTargetOpen] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
+  const [aiItems, setAiItems] = useState<AItem[]>([])
+  const [suggestions, setSuggestions] = useState<Map<string, Suggestion[]>>(new Map())
+  const editorApi = useRef<EditorApi | null>(null)
   const [snapRefresh, setSnapRefresh] = useState(0)
   const [restoreN, setRestoreN] = useState(0)
   // Isi adegan saat dibuka (untuk tahu apakah ada perubahan → snapshot otomatis)
@@ -162,7 +166,7 @@ export default function Workspace({ project, onClose }: Props) {
     }
   }, [activeId, find, flush, p])
 
-  const onReady = useCallback((fn: () => string) => { getBody.current = fn }, [])
+  const onReady = useCallback((api: EditorApi) => { editorApi.current = api; getBody.current = api.getMarkdown }, [])
 
   // Simpan saat jendela kehilangan fokus / disembunyikan / ditutup
   useEffect(() => {
@@ -455,6 +459,11 @@ export default function Workspace({ project, onClose }: Props) {
                 describe={describe}
                 onOpenEntry={openEntry}
                 onRename={(t) => actions.renameScene(active.chapter, active.scene, t)}
+                suggestions={suggestions.get(activeId!)}
+                onSuggestionDone={(id) => setSuggestions((m) => {
+                  const list = (m.get(activeId!) ?? []).filter((x) => x.id !== id)
+                  return new Map(m).set(activeId!, list)
+                })}
                 autoFocus={!editing}
                 onZoom={changeZoom}
                 onChange={onChange}
@@ -476,6 +485,9 @@ export default function Workspace({ project, onClose }: Props) {
                 {active && <>Adegan ini {formatNumber(active.scene.words)} kata · </>}
                 <SaveBadge state={save} onRetry={flush} />
               </span>
+              {(suggestions.get(activeId!)?.length ?? 0) > 0 && (
+                <span className="ws-sugs"><span aria-hidden="true" className="ws-sug-dot" />{suggestions.get(activeId!)!.length} saran ejaan di adegan ini</span>
+              )}
               <span>
                 {active && <>Bab ini {formatNumber(chapterWords(active.chapter))} kata · </>}
                 Total {formatNumber(total)}{p.data.target_kata ? ` / ${formatNumber(p.data.target_kata)}` : ''} kata
@@ -495,19 +507,23 @@ export default function Workspace({ project, onClose }: Props) {
               </div>
               <div className="side-body" role="tabpanel">
                 {tab === 'asisten' && (
-                  <div className="side-empty">
-                    <span className="side-empty-icon" aria-hidden="true">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.6" strokeLinejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /></svg>
-                    </span>
-                    <span className="side-empty-title">Halaman kosong itu wajar</span>
-                    <span className="side-empty-text">Tulis apa saja dulu, sesingkat apa pun. Merapikan bisa nanti.</span>
-                    <ul className="side-tips">
-                      <li><b>Ganti judul adegan</b> langsung di atas halaman, atau klik dua kali namanya di binder.</li>
-                      <li><b>Pemisah adegan:</b> ketik <kbd>---</kbd> lalu Enter.</li>
-                      <li><b>Mode fokus:</b> tekan <kbd>⌘.</kbd> untuk menyembunyikan semua panel.</li>
-                    </ul>
-                    <p className="side-soon">Asisten AI (ide saat buntu, periksa ejaan, cari adegan) hadir di Fase 3.</p>
-                  </div>
+                  <Assistant project={p} items={aiItems} setItems={setAiItems}
+                    getScene={() => active ? { chapter: active.chapter, scene: active.scene, body: getBody.current?.() ?? active.scene.body } : null}
+                    onSpelling={(list) => {
+                      if (!activeId) return
+                      setSuggestions((m) => new Map(m).set(activeId, list.map((x, n) => ({ ...x, id: `${Date.now()}-${n}` }))))
+                    }}
+                    onOpenScene={(id, kutipan) => {
+                      const hit = find(id)
+                      if (!hit) return
+                      if (id !== activeId) { setMode('menulis'); openScene(hit.chapter, hit.scene) }
+                      setTimeout(() => editorApi.current?.select(kutipan), 350)
+                    }}
+                    onShowText={(k) => editorApi.current?.select(k) ?? false}
+                    sceneTitle={(id) => {
+                      const hit = find(id)
+                      return hit ? `${chapterLabel(p, hit.chapter)} · ${String(hit.scene.meta.judul || '')}` : 'Adegan'
+                    }} />
                 )}
                 {tab === 'adegan' && (active ? (
                   <div className="side-stack">

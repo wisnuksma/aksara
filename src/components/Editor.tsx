@@ -3,6 +3,7 @@ import { EditorContent, useEditor, useEditorState, type Editor as TEditor } from
 import { Focus, Placeholder } from '@tiptap/extensions'
 import { editorExtensions } from '../lib/editorExtensions'
 import { BibleHighlight, bibleKey, type Term } from '../lib/bibleHighlight'
+import { findText, SuggestHighlight, suggestKey } from '../lib/suggestHighlight'
 import { countWords } from '../lib/words'
 import Select from './Select'
 import './editor.css'
@@ -27,20 +28,33 @@ interface Props {
   /** Dipanggil setiap isi berubah, dengan jumlah kata terbaru. */
   onChange: (words: number) => void
   /** Memberi fungsi untuk mengambil isi sebagai Markdown (dipakai saat menyimpan). */
-  onReady: (getMarkdown: () => string) => void
+  onReady: (api: EditorApi) => void
+  /** Saran ejaan dari Asisten (ditandai garis bergelombang). */
+  suggestions?: Suggestion[]
+  onSuggestionDone?: (id: string) => void
+}
+
+export interface Suggestion { id: string; kutipan: string; ganti: string; alasan: string; jenis: string }
+export interface EditorApi {
+  getMarkdown: () => string
+  /** Pilih & gulir ke teks persis di naskah. false bila tidak ditemukan. */
+  select: (text: string) => boolean
+  /** Ganti teks persis (dipakai saat pengguna menekan Terima). */
+  replace: (text: string, by: string) => boolean
 }
 
 export const editorWords = (e: TEditor) => countWords(e.getText({ blockSeparator: '\n' }))
 
 export interface EntryCard { name: string; kind: string; sub: string; aliases: string[]; notes: string; color: string; colorDark: string }
 
-export default function Editor({ markdown, heading, title, zoom, focusMode = false, autoFocus = true, terms, describe, onOpenEntry, onZoom, onChange, onRename, onReady }: Props) {
+export default function Editor({ markdown, heading, title, zoom, focusMode = false, autoFocus = true, terms, describe, onOpenEntry, suggestions, onSuggestionDone, onZoom, onChange, onRename, onReady }: Props) {
   const editor = useEditor({
     extensions: [
       ...editorExtensions,
       Placeholder.configure({ placeholder: 'Mulai menulis di sini…' }),
       Focus.configure({ className: 'has-focus', mode: 'shallowest' }),
       BibleHighlight,
+      SuggestHighlight,
     ],
     content: markdown,
     contentType: 'markdown',
@@ -51,8 +65,42 @@ export default function Editor({ markdown, heading, title, zoom, focusMode = fal
   const [empty, setEmpty] = useState(() => !markdown.trim())
 
   useEffect(() => {
-    if (editor) onReady(() => editor.getMarkdown())
+    if (!editor) return
+    onReady({
+      getMarkdown: () => editor.getMarkdown(),
+      select: (text) => {
+        const r = findText(editor.state.doc, text)
+        if (!r) return false
+        editor.chain().focus().setTextSelection(r).scrollIntoView().run()
+        return true
+      },
+      replace: (text, by) => {
+        const r = findText(editor.state.doc, text)
+        if (!r) return false
+        editor.chain().focus().command(({ tr }) => { tr.insertText(by, r.from, r.to); return true }).run()
+        return true
+      },
+    })
   }, [editor, onReady])
+
+  // Tandai saran ejaan terbaru
+  useEffect(() => {
+    if (editor && !editor.isDestroyed) {
+      editor.view.dispatch(editor.state.tr.setMeta(suggestKey, (suggestions ?? []).map((s) => ({ id: s.id, text: s.kutipan }))))
+    }
+  }, [editor, suggestions])
+
+  // Kartu saran ejaan (klik garis bergelombang)
+  const [sug, setSug] = useState<{ id: string; x: number; y: number; below: boolean } | null>(null)
+  const sugInfo = sug ? suggestions?.find((s) => s.id === sug.id) : undefined
+  const acceptSug = (s: Suggestion) => {
+    if (editor) {
+      const r = findText(editor.state.doc, s.kutipan)
+      if (r) editor.chain().focus().command(({ tr }) => { tr.insertText(s.ganti, r.from, r.to); return true }).run()
+    }
+    setSug(null)
+    onSuggestionDone?.(s.id)
+  }
 
   // Kirim daftar nama terbaru ke penyorot
   useEffect(() => {
@@ -80,6 +128,14 @@ export default function Editor({ markdown, heading, title, zoom, focusMode = fal
     hideT.current = window.setTimeout(() => setCard(null), 220)
   }
   const onClickLink = (ev: React.MouseEvent) => {
+    const sm = (ev.target as HTMLElement).closest<HTMLElement>('.spell-mark')
+    if (sm) {
+      const r = sm.getBoundingClientRect()
+      const below = r.top < 260
+      setSug({ id: sm.dataset.sug!, x: Math.min(r.left, window.innerWidth - 300), y: below ? r.bottom + 8 : r.top - 8, below })
+      setCard(null)
+      return
+    }
     const el = (ev.target as HTMLElement).closest<HTMLElement>('.bible-link')
     if (el && (ev.metaKey || ev.ctrlKey)) { ev.preventDefault(); setCard(null); onOpenEntry?.(el.dataset.entry!) }
   }
@@ -89,7 +145,7 @@ export default function Editor({ markdown, heading, title, zoom, focusMode = fal
     <div className={'editor-column' + (focusMode ? ' is-focus' : '')}>
       {editor && !focusMode && <Toolbar editor={editor} zoom={zoom} onZoom={onZoom} />}
       <div className="page-scroller" onMouseOver={onOver} onMouseOut={onOut} onClick={onClickLink}
-        onScroll={() => setCard(null)}>
+        onScroll={() => { setCard(null); setSug(null) }}>
         <article className="page" style={{ zoom: zoom / 100 }}>
           <span className="page-heading">{heading}</span>
           <TitleInput value={title} onRename={onRename} onEnter={() => editor?.commands.focus('start')} />
@@ -103,6 +159,18 @@ export default function Editor({ markdown, heading, title, zoom, focusMode = fal
           </div>
         )}
       </div>
+      {sugInfo && sug && (
+        <div className={'entry-card sug-card' + (sug.below ? ' is-below' : '')} role="dialog" aria-label="Saran ejaan"
+          style={{ left: sug.x, top: sug.y }}>
+          <span className="sug-kind">{sugInfo.jenis === 'kalimat' ? 'Kalimat' : 'Ejaan'}</span>
+          <div className="sug-change"><s>{sugInfo.kutipan}</s><span aria-hidden="true">→</span><b>{sugInfo.ganti}</b></div>
+          <p className="sug-why">{sugInfo.alasan}</p>
+          <div className="sug-actions">
+            <button className="sug-accept" onClick={() => acceptSug(sugInfo)}>Terima</button>
+            <button className="sug-ignore" onClick={() => { setSug(null); onSuggestionDone?.(sugInfo.id) }}>Abaikan</button>
+          </div>
+        </div>
+      )}
       {info && card && (
         <div className={'entry-card' + (card.below ? ' is-below' : '')} role="tooltip"
           style={{ left: card.x, top: card.y, ['--lk' as string]: info.color, ['--lk-d' as string]: info.colorDark }}
