@@ -4,6 +4,8 @@ import Editor from '../components/Editor'
 import Binder from '../components/Binder'
 import BibleSummary from '../components/BibleSummary'
 import World, { type WorldTarget } from './World'
+import { bibleTerms, entryAliases, entryFaction, entryName, factionColor, findEntry, KIND_LABEL } from '../lib/bible'
+import type { EntryCard } from '../components/Editor'
 import * as ops from '../lib/binderOps'
 import { chapterLabel, nextChapterTitle, saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
 import { loadStats, saveStats, todayKey, type Stats } from '../lib/stats'
@@ -47,7 +49,7 @@ export default function Workspace({ project, onClose }: Props) {
   const [editing, setEditing] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
-  const [, setVersion] = useState(0)
+  const [version, setVersion] = useState(0)
   const bump = () => setVersion((v) => v + 1)
 
   // Isi editor aktif diambil lewat fungsi ini saat menyimpan.
@@ -232,6 +234,26 @@ export default function Workspace({ project, onClose }: Props) {
     }),
   }
 
+  // Nama & alias untuk disorot di naskah (dihitung ulang saat story bible berubah)
+  const terms = useMemo(() => bibleTerms(p.bible), [p, version]) // eslint-disable-line react-hooks/exhaustive-deps
+  const describe = useCallback((id: string): EntryCard | null => {
+    const e = findEntry(p.bible, id)
+    if (!e) return null
+    const f = entryFaction(p.bible, e)
+    const c = f ? factionColor(f.meta.warna) : null
+    const m = e.meta
+    const sub = [e.kind === 'tokoh' ? m.peran : m.jenis, e.kind !== 'faksi' ? m.faksi : m.pemimpin]
+      .map((x) => String(x ?? '').trim()).filter(Boolean).join(' · ')
+    return {
+      name: entryName(e), kind: KIND_LABEL[e.kind], sub, aliases: entryAliases(e),
+      notes: e.body.trim().slice(0, 240), color: c?.ink ?? '#8A6A2B', colorDark: c?.text ?? '#D4B26C',
+    }
+  }, [p])
+  const openEntry = useCallback((id: string) => {
+    const e = findEntry(p.bible, id)
+    if (e) openWorld({ kind: e.kind, file: e.file })
+  }, [p]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const registerWorldNew = useCallback((fn: () => void) => { worldNew.current = fn }, [])
   function openWorld(t: WorldTarget) {
     flush()
@@ -339,6 +361,9 @@ export default function Workspace({ project, onClose }: Props) {
                 title={String(active.scene.meta.judul || '')}
                 zoom={zoom}
                 focusMode={focusMode}
+                terms={terms}
+                describe={describe}
+                onOpenEntry={openEntry}
                 onRename={(t) => actions.renameScene(active.chapter, active.scene, t)}
                 autoFocus={!editing}
                 onZoom={changeZoom}

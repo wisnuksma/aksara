@@ -17,13 +17,14 @@ export const KIND_FIELDS: Record<BibleKind, { key: string; label: string; hint: 
 const RESERVED = new Set(['id', 'nama', 'alias', 'warna', 'faksi', 'peran', 'jenis', 'pemimpin'])
 
 /** Warna faksi (dipakai juga untuk sorotan nama di naskah nanti). */
-export const FACTION_COLORS: { key: string; label: string; text: string; card: string }[] = [
-  { key: 'biru', label: 'Biru (Estelle)', text: '#B4CAEC', card: '#22304A' },
-  { key: 'merah', label: 'Merah anggur (Navea)', text: '#E8AABD', card: '#3A2330' },
-  { key: 'hijau', label: 'Hijau', text: '#B5D3B0', card: '#24382B' },
-  { key: 'emas', label: 'Emas', text: '#E3C88E', card: '#3A3222' },
-  { key: 'ungu', label: 'Ungu', text: '#CDB8E8', card: '#30264A' },
-  { key: 'abu', label: 'Abu-abu', text: '#C9CBD8', card: '#2F3448' },
+// text/card: untuk kartu di sidebar gelap; ink: warna sorotan nama di naskah terang.
+export const FACTION_COLORS: { key: string; label: string; text: string; card: string; ink: string }[] = [
+  { key: 'biru', label: 'Biru (Estelle)', text: '#B4CAEC', card: '#22304A', ink: '#1F3A66' },
+  { key: 'merah', label: 'Merah anggur (Navea)', text: '#E8AABD', card: '#3A2330', ink: '#7A2E45' },
+  { key: 'hijau', label: 'Hijau', text: '#B5D3B0', card: '#24382B', ink: '#2E5A3A' },
+  { key: 'emas', label: 'Emas', text: '#E3C88E', card: '#3A3222', ink: '#8A6A2B' },
+  { key: 'ungu', label: 'Ungu', text: '#CDB8E8', card: '#30264A', ink: '#4E3A78' },
+  { key: 'abu', label: 'Abu-abu', text: '#C9CBD8', card: '#2F3448', ink: '#4A4F63' },
 ]
 export const factionColor = (key: unknown) => FACTION_COLORS.find((c) => c.key === key) ?? FACTION_COLORS[5]
 
@@ -109,3 +110,30 @@ export async function syncEntryFile(root: FileSystemDirectoryHandle, e: Entry): 
   await dir.removeEntry(old)
   return true
 }
+
+/** Faksi yang menaungi entri (faksi itu sendiri, atau faksi milik tokoh/tempat). */
+export function entryFaction(bible: Bible, e: Entry): Entry | undefined {
+  if (e.kind === 'faksi') return e
+  const name = String(e.meta.faksi ?? '').trim()
+  return name ? bible.faksi.find((f) => entryName(f) === name) : undefined
+}
+
+/** Semua nama & alias untuk disorot di naskah. */
+export function bibleTerms(bible: Bible) {
+  const out: { text: string; id: string; light: string; dark: string }[] = []
+  const neutral = { light: '#8A6A2B', dark: '#D4B26C' }
+  for (const kind of KINDS) {
+    for (const e of bible[kind]) {
+      const f = entryFaction(bible, e)
+      const c = f ? factionColor(f.meta.warna) : null
+      const col = c ? { light: c.ink, dark: c.text } : neutral
+      for (const text of [entryName(e), ...entryAliases(e)]) {
+        if (text && text !== 'Tanpa nama') out.push({ text, id: entryId(e), ...col })
+      }
+    }
+  }
+  return out
+}
+
+export const entryId = (e: Entry) => String(e.meta.id || `${e.kind}/${e.file}`)
+export const findEntry = (bible: Bible, id: string) => KINDS.flatMap((k) => bible[k]).find((e) => entryId(e) === id)

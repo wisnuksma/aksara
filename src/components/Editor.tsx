@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { EditorContent, useEditor, useEditorState, type Editor as TEditor } from '@tiptap/react'
 import { Focus, Placeholder } from '@tiptap/extensions'
 import { editorExtensions } from '../lib/editorExtensions'
+import { BibleHighlight, bibleKey, type Term } from '../lib/bibleHighlight'
 import { countWords } from '../lib/words'
 import Select from './Select'
 import './editor.css'
@@ -15,6 +16,11 @@ interface Props {
   focusMode?: boolean
   /** Simpan judul adegan baru (diketik langsung di halaman). */
   onRename: (title: string) => void
+  /** Nama & alias story bible yang disorot. */
+  terms?: Term[]
+  /** Isi kartu ringkas untuk sebuah entri. */
+  describe?: (id: string) => EntryCard | null
+  onOpenEntry?: (id: string) => void
   /** Taruh kursor di akhir naskah saat dibuka (default ya). */
   autoFocus?: boolean
   onZoom: (z: number) => void
@@ -26,12 +32,15 @@ interface Props {
 
 export const editorWords = (e: TEditor) => countWords(e.getText({ blockSeparator: '\n' }))
 
-export default function Editor({ markdown, heading, title, zoom, focusMode = false, autoFocus = true, onZoom, onChange, onRename, onReady }: Props) {
+export interface EntryCard { name: string; kind: string; sub: string; aliases: string[]; notes: string; color: string; colorDark: string }
+
+export default function Editor({ markdown, heading, title, zoom, focusMode = false, autoFocus = true, terms, describe, onOpenEntry, onZoom, onChange, onRename, onReady }: Props) {
   const editor = useEditor({
     extensions: [
       ...editorExtensions,
       Placeholder.configure({ placeholder: 'Mulai menulis di sini…' }),
       Focus.configure({ className: 'has-focus', mode: 'shallowest' }),
+      BibleHighlight,
     ],
     content: markdown,
     contentType: 'markdown',
@@ -45,10 +54,42 @@ export default function Editor({ markdown, heading, title, zoom, focusMode = fal
     if (editor) onReady(() => editor.getMarkdown())
   }, [editor, onReady])
 
+  // Kirim daftar nama terbaru ke penyorot
+  useEffect(() => {
+    if (editor && !editor.isDestroyed) editor.view.dispatch(editor.state.tr.setMeta(bibleKey, terms ?? []))
+  }, [editor, terms])
+
+  // ----- Kartu ringkas saat kursor mouse di atas nama -----
+  const [card, setCard] = useState<{ id: string; x: number; y: number; below: boolean } | null>(null)
+  const showT = useRef<number | undefined>(undefined)
+  const hideT = useRef<number | undefined>(undefined)
+  const onOver = (ev: React.MouseEvent) => {
+    const el = (ev.target as HTMLElement).closest<HTMLElement>('.bible-link')
+    if (!el) return
+    window.clearTimeout(hideT.current)
+    window.clearTimeout(showT.current)
+    showT.current = window.setTimeout(() => {
+      const r = el.getBoundingClientRect()
+      const below = r.top < 220
+      setCard({ id: el.dataset.entry!, x: Math.min(r.left, window.innerWidth - 300), y: below ? r.bottom + 8 : r.top - 8, below })
+    }, 280)
+  }
+  const onOut = (ev: React.MouseEvent) => {
+    if (!(ev.target as HTMLElement).closest('.bible-link')) return
+    window.clearTimeout(showT.current)
+    hideT.current = window.setTimeout(() => setCard(null), 220)
+  }
+  const onClickLink = (ev: React.MouseEvent) => {
+    const el = (ev.target as HTMLElement).closest<HTMLElement>('.bible-link')
+    if (el && (ev.metaKey || ev.ctrlKey)) { ev.preventDefault(); setCard(null); onOpenEntry?.(el.dataset.entry!) }
+  }
+  const info = card && describe ? describe(card.id) : null
+
   return (
     <div className={'editor-column' + (focusMode ? ' is-focus' : '')}>
       {editor && !focusMode && <Toolbar editor={editor} zoom={zoom} onZoom={onZoom} />}
-      <div className="page-scroller">
+      <div className="page-scroller" onMouseOver={onOver} onMouseOut={onOut} onClick={onClickLink}
+        onScroll={() => setCard(null)}>
         <article className="page" style={{ zoom: zoom / 100 }}>
           <span className="page-heading">{heading}</span>
           <TitleInput value={title} onRename={onRename} onEnter={() => editor?.commands.focus('start')} />
@@ -62,6 +103,21 @@ export default function Editor({ markdown, heading, title, zoom, focusMode = fal
           </div>
         )}
       </div>
+      {info && card && (
+        <div className={'entry-card' + (card.below ? ' is-below' : '')} role="tooltip"
+          style={{ left: card.x, top: card.y, ['--lk' as string]: info.color, ['--lk-d' as string]: info.colorDark }}
+          onMouseEnter={() => window.clearTimeout(hideT.current)}
+          onMouseLeave={() => { hideT.current = window.setTimeout(() => setCard(null), 220) }}>
+          <span className="entry-card-kind">{info.kind}{info.sub ? ` · ${info.sub}` : ''}</span>
+          <span className="entry-card-name">{info.name}</span>
+          {info.aliases.length > 0 && <span className="entry-card-alias">Juga disebut: {info.aliases.join(', ')}</span>}
+          {info.notes && <p className="entry-card-notes">{info.notes}</p>}
+          <div className="entry-card-foot">
+            <span>⌘-klik nama untuk membuka</span>
+            <button onClick={() => { const id = card.id; setCard(null); onOpenEntry?.(id) }}>Buka</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
