@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent } from 'react'
-import { sceneId, type Chapter, type Project, type Scene } from '../lib/project'
+import { chapterNumber, sceneId, type Chapter, type Project, type Scene } from '../lib/project'
 import { formatNumber } from '../lib/recent'
 import './binder.css'
 
@@ -37,6 +37,12 @@ export default function Binder(props: Props) {
   const [menu, setMenu] = useState<string | null>(null)
   const perChapterTarget = p.data.target_kata && p.chapters.length ? p.data.target_kata / p.chapters.length : 0
   const chapterWords = (c: Chapter) => c.scenes.reduce((n, s) => n + s.words, 0)
+  /** Label kecil "Bab 2" di atas nama bab, hanya bila namanya bukan "Bab 2" itu sendiri. */
+  const caption = (c: Chapter) => {
+    const n = chapterNumber(p, c)
+    if (n == null || c.judul.trim().toLowerCase() === `bab ${n}`) return null
+    return `Bab ${n}`
+  }
 
   const half = (e: DragEvent) => {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
@@ -106,14 +112,17 @@ export default function Binder(props: Props) {
                 <InlineEdit className="chapter-edit" value={c.judul} label="Nama bab"
                   onDone={(v) => { setEditing(null); if (v && v !== c.judul) props.renameChapter(c, v) }} />
               ) : (
-                <button className="chapter-head" aria-expanded={open}
+                <button className={'chapter-head' + (caption(c) ? ' has-caption' : '')} aria-expanded={open}
                   draggable={!busy}
                   onDragStart={(e) => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', c.judul); setDrag({ kind: 'chapter', chapter: c }) }}
                   onDragEnd={endDrag}
                   onClick={() => props.toggleChapter(c)}
                   onDoubleClick={() => setEditing(key)}
-                  title="Klik untuk buka/tutup · klik dua kali untuk ubah nama · geser untuk mengurutkan">
-                  <span className="chapter-name">{c.judul}</span>
+                  title={`${c.judul}\nKlik untuk buka/tutup · klik dua kali untuk ubah nama · geser untuk mengurutkan`}>
+                  <span className="chapter-text">
+                    {caption(c) && <span className="chapter-num">{caption(c)}</span>}
+                    <span className="chapter-name">{c.judul}</span>
+                  </span>
                   <span className="chapter-words">{w ? formatNumber(w) : '—'}</span>
                 </button>
               )}
@@ -150,7 +159,7 @@ export default function Binder(props: Props) {
                           onDragEnd={endDrag}
                           onClick={() => props.openScene(c, s)}
                           onDoubleClick={() => setEditing(k)}
-                          title="Klik dua kali untuk ubah nama · geser untuk mengurutkan">
+                          title={`${String(s.meta.judul || s.file)}\nKlik dua kali untuk ubah nama · geser untuk mengurutkan`}>
                           {String(s.meta.judul || s.file)}
                         </button>
                       )}
