@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { get, set } from 'idb-keyval'
 import Editor from '../components/Editor'
 import Binder from '../components/Binder'
+import BibleSummary from '../components/BibleSummary'
+import World, { type WorldTarget } from './World'
 import * as ops from '../lib/binderOps'
 import { chapterLabel, nextChapterTitle, saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
 import { loadStats, saveStats, todayKey, type Stats } from '../lib/stats'
@@ -36,6 +38,11 @@ export default function Workspace({ project, onClose }: Props) {
   const [showRight, setShowRight] = useState(true)
   const [tab, setTab] = useState<Tab>(() => (totalWords(project) === 0 ? 'asisten' : 'catatan'))
   const [focusMode, setFocusMode] = useState(false)
+  const [mode, setMode] = useState<'menulis' | 'dunia'>('menulis')
+  const [worldTarget, setWorldTarget] = useState<WorldTarget>({ kind: 'tokoh' })
+  const worldNew = useRef<(() => void) | null>(null)
+  const modeRef = useRef(mode)
+  modeRef.current = mode
   const [targetOpen, setTargetOpen] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -138,9 +145,10 @@ export default function Workspace({ project, onClose }: Props) {
       const mod = (e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey
       const k = e.key.toLowerCase()
       if (mod && k === 's') { e.preventDefault(); flush() }
-      else if (mod && e.key === '.') { e.preventDefault(); setFocusMode((f) => !f) }
+      else if (mod && e.key === '.') { e.preventDefault(); if (modeRef.current === 'menulis') setFocusMode((f) => !f) }
       else if (mod && k === 'n') {
         e.preventDefault()
+        if (modeRef.current === 'dunia') { worldNew.current?.(); return }
         const c = find(activeIdRef.current)?.chapter ?? p.chapters[p.chapters.length - 1]
         if (c) actionsRef.current.addScene(c); else actionsRef.current.addChapter()
       }
@@ -224,6 +232,16 @@ export default function Workspace({ project, onClose }: Props) {
     }),
   }
 
+  const registerWorldNew = useCallback((fn: () => void) => { worldNew.current = fn }, [])
+  function openWorld(t: WorldTarget) {
+    flush()
+    setFocusMode(false)
+    setWorldTarget({ ...t })
+    setMode('dunia')
+  }
+  // Klik adegan di binder saat mode Dunia -> kembali menulis
+  const openSceneFromBinder = (c: Chapter, s: Scene) => { setMode('menulis'); openScene(c, s) }
+
   const actionsRef = useRef(actions)
   actionsRef.current = actions
 
@@ -264,9 +282,9 @@ export default function Workspace({ project, onClose }: Props) {
         </div>
         <div className="ws-spacer" />
         <div className="ws-modes" role="group" aria-label="Mode kerja">
-          <button className="is-active" aria-pressed="true">Menulis</button>
+          <button className={mode === 'menulis' ? 'is-active' : ''} aria-pressed={mode === 'menulis'} onClick={() => setMode('menulis')}>Menulis</button>
           <button disabled title="Hadir di fase berikutnya">Merencanakan</button>
-          <button disabled title="Hadir di fase berikutnya">Dunia</button>
+          <button className={mode === 'dunia' ? 'is-active' : ''} aria-pressed={mode === 'dunia'} onClick={() => openWorld({ kind: worldTarget.kind, file: undefined })}>Dunia</button>
         </div>
         <button className="ws-search" disabled title="Pencarian hadir di fase berikutnya">
           <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
@@ -290,7 +308,9 @@ export default function Workspace({ project, onClose }: Props) {
         {showLeft && !focusMode && (
           <nav className="binder" aria-label="Binder">
             <Binder project={p} activeId={activeId} expanded={expanded}
-              editing={editing} setEditing={setEditing} busy={busy} {...actions} />
+              editing={editing} setEditing={setEditing} busy={busy} {...actions} openScene={openSceneFromBinder} />
+
+            <BibleSummary project={p} onOpen={(kind, file) => openWorld({ kind, file })} onCreate={(kind) => openWorld({ kind, create: true })} />
 
             <div className="daily">
               <Ring value={dailyTarget ? today / dailyTarget : 0} />
@@ -307,6 +327,9 @@ export default function Workspace({ project, onClose }: Props) {
         )}
 
         <main className="ws-main">
+          {mode === 'dunia' ? (
+            <World project={p} target={worldTarget} onChanged={bump} registerNew={registerWorldNew} />
+          ) : (<>
           <div className="ws-center">
             {active ? (
               <Editor
@@ -388,6 +411,7 @@ export default function Workspace({ project, onClose }: Props) {
               </div>
             </aside>
           )}
+          </>)}
         </main>
       </div>
       {focusMode && (

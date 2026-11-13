@@ -7,7 +7,9 @@ export type FMValue = string | number | string[]
 export type FrontMatter = Record<string, FMValue>
 
 export function toFrontMatter(data: FrontMatter, body = ''): string {
-  const lines = Object.entries(data).map(([k, v]) => {
+  const lines = Object.entries(data).map(([key, v]) => {
+    // Kunci dengan spasi/huruf khusus (mis. "Warna mata") ditulis berkutip
+    const k = /^[A-Za-z_][\w-]*$/.test(key) ? key : JSON.stringify(key)
     if (Array.isArray(v)) return `${k}: [${v.map((x) => JSON.stringify(x)).join(', ')}]`
     if (typeof v === 'number') return `${k}: ${v}`
     return `${k}: ${JSON.stringify(v)}`
@@ -23,8 +25,11 @@ export function parseFrontMatter(text: string): { data: FrontMatter; body: strin
   const data: FrontMatter = {}
   for (const line of m[1].split('\n')) {
     const kv = /^([A-Za-z_][\w-]*):\s*(.*)$/.exec(line)
-    if (!kv) continue
-    data[kv[1]] = parseValue(kv[2].trim())
+    if (kv) { data[kv[1]] = parseValue(kv[2].trim()); continue }
+    const q = /^("(?:[^"\\]|\\.)*"):\s*(.*)$/.exec(line)
+    if (q) {
+      try { data[JSON.parse(q[1])] = parseValue(q[2].trim()) } catch { /* lewati baris rusak */ }
+    }
   }
   return { data, body: src.slice(m[0].length).replace(/^\n/, '') }
 }

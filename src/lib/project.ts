@@ -3,6 +3,7 @@ import { ensurePermission, writeJson, writeText } from './fs'
 import { parseFrontMatter, toFrontMatter, type FrontMatter } from './frontmatter'
 import { countMarkdownWords } from './words'
 import type { ProjectFile } from './types'
+import { loadBible, type Bible } from './bible'
 
 export interface Scene {
   file: string          // "01-adegan-1.md"
@@ -20,6 +21,7 @@ export interface Project {
   root: FileSystemDirectoryHandle
   data: ProjectFile
   chapters: Chapter[]
+  bible: Bible
 }
 
 export class NotAProjectError extends Error {}
@@ -78,7 +80,8 @@ export async function loadProject(root: FileSystemDirectoryHandle): Promise<Proj
     }
     chapters.push({ folder, judul: bab.judul || folder, catatan: bab.catatan ?? '', scenes })
   }
-  return { root, data, chapters }
+  const bible = await loadBible(root)
+  return { root, data, chapters, bible }
 }
 
 export async function saveScene(p: Project, chapter: Chapter, scene: Scene) {

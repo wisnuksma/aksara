@@ -49,3 +49,7 @@ kbd { font-family: inherit; }
 .btn-primary { background: var(--strong); border-color: var(--strong); color: var(--strong-text); font-weight: 600; padding: 0 20px; }
 .btn-primary:hover:not(:disabled) { background: var(--strong-hover); }
 
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
+.btn-danger:hover:not(:disabled) { filter: brightness(1.08); background: var(--danger); }
+.confirm { max-width: 440px; }
+.confirm-msg { margin: 0; color: var(--text-2); line-height: 1.6; }
