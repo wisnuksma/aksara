@@ -25,10 +25,10 @@
   width: 28px; height: 28px; border-radius: 7px; flex: none;
   background: var(--ink-card); border: 1px solid var(--ink-border); color: var(--gold);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 20px; font-weight: 600; line-height: 1;
+  font-family: var(--font-display); font-size: 17px; font-weight: 600; line-height: 1;
 }
 .ws-novel {
-  font-family: var(--font-display); font-size: 22px; font-weight: 600;
+  font-family: var(--font-display); font-size: 18px; font-weight: 600;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .ws-spacer { flex: 1; min-width: 20px; }

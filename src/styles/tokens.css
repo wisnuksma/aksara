@@ -50,8 +50,8 @@
 
   /* Tipografi */
   --font-ui: Inter, system-ui, -apple-system, sans-serif;
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-text: Literata, Georgia, serif;
+  --font-display: Lora, Georgia, serif;
+  --font-text: Lora, Georgia, serif;
 }
 
 /* Mode gelap: sidebar tetap; area naskah berganti (CLAUDE.md bagian 4). */

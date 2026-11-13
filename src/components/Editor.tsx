@@ -129,7 +129,7 @@ function Toolbar({ editor, zoom, onZoom }: { editor: TEditor; zoom: number; onZo
       {btn('Ulangi (⇧⌘Z)', false, () => run().redo().run(), icon('M15 14l5-5-5-5M20 9H9a5 5 0 0 0 0 10h3'), '', !s.canRedo)}
       <span className="tb-sep" aria-hidden="true" />
       <Select className="tb-select tb-style" value={s.style} options={STYLES} label={(v) => STYLE_LABEL[v]} onChange={setStyle} aria-label="Gaya paragraf" />
-      <span className="tb-static tb-font" title="Font naskah">Literata</span>
+      <span className="tb-static tb-font" title="Font naskah">Lora</span>
       <span className="tb-static tb-size" title="Ukuran huruf">17</span>
       <span className="tb-sep" aria-hidden="true" />
       {btn('Tebal (⌘B)', s.bold, () => run().toggleBold().run(), <b>B</b>, 'tb-b')}

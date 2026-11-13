@@ -1,6 +1,6 @@
 # Aksara — Aplikasi Menulis Novel untuk Mac
 
-Nama aplikasi: **Aksara** (tagline: "Tulis naskah dan bangun dunia ceritamu, di satu meja."). Ikon aplikasi: monogram huruf "A" Cormorant Garamond warna emas `#C9A45C` di atas kotak biru tinta `#23273A`.
+Nama aplikasi: **Aksara** (tagline: "Tulis naskah dan bangun dunia ceritamu, di satu meja."). Ikon aplikasi: monogram huruf "A" Lora warna emas `#C9A45C` di atas kotak biru tinta `#23273A`.
 
 Dokumen ini adalah spesifikasi utama proyek. Baca seluruhnya sebelum menulis kode.
 Pemilik proyek bukan programmer: jelaskan langkah dengan bahasa sederhana (Bahasa Indonesia),
@@ -102,8 +102,9 @@ Estelle `#B4CAEC`, Navea `#E8AABD`, ejaan `#F08A7C`.
 
 ### Tipografi
 - UI: **Inter** 13px.
-- Judul aplikasi / nama bab di binder: **Cormorant Garamond** 600.
-- Naskah & judul adegan: **Literata** — isi 17px, line-height 1.8; judul adegan 26px 600.
+- Judul aplikasi / nama bab di binder: **Lora** 600 (nama bab 16px).
+- Naskah & judul adegan: **Lora** — isi 17px, line-height 1.8; judul adegan 26px 600.
+- _(Diganti dari Cormorant Garamond + Literata atas permintaan pemilik: lebih lembut dan nyaman dibaca. File di `design-reference/` masih memakai font lama.)_
 - Label kecil: 11px, 600, huruf kapital, letter-spacing .14em, warna emas.
 
 ### Tata letak jendela utama (1440×900 sebagai acuan)
