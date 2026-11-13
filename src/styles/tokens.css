@@ -88,3 +88,9 @@
     --shadow-soft: 0 6px 20px rgba(0,0,0,.3);
   }
 }
+
+/* Warna status adegan (urutan kategori tetap; diuji dengan validator palet) */
+:root { --st-ide: #2a78d6; --st-draf: #eb6834; --st-revisi: #1baf7a; --st-selesai: #eda100; --chart-bar: #8A6A2B; --grid: #E6DCC6; }
+@media (prefers-color-scheme: dark) {
+  :root { --st-ide: #3987e5; --st-draf: #d95926; --st-revisi: #199e70; --st-selesai: #c98500; --chart-bar: #D4B26C; --grid: #2C3044; }
+}

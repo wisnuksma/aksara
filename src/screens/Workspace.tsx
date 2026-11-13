@@ -4,6 +4,7 @@ import Editor from '../components/Editor'
 import Binder from '../components/Binder'
 import BibleSummary from '../components/BibleSummary'
 import World, { type WorldTarget } from './World'
+import Plan from '../plan/Plan'
 import { bibleTerms, entryAliases, entryFaction, entryName, factionColor, findEntry, KIND_LABEL } from '../lib/bible'
 import type { EditorApi, EntryCard, Suggestion } from '../components/Editor'
 import Assistant, { type AItem } from '../components/Assistant'
@@ -47,7 +48,7 @@ export default function Workspace({ project, onClose }: Props) {
   const [showRight, setShowRight] = useState(true)
   const [tab, setTab] = useState<Tab>(() => (totalWords(project) === 0 ? 'asisten' : 'catatan'))
   const [focusMode, setFocusMode] = useState(false)
-  const [mode, setMode] = useState<'menulis' | 'dunia'>('menulis')
+  const [mode, setMode] = useState<'menulis' | 'dunia' | 'rencana'>('menulis')
   const [worldTarget, setWorldTarget] = useState<WorldTarget>({ kind: 'tokoh' })
   const worldNew = useRef<(() => void) | null>(null)
   const modeRef = useRef(mode)
@@ -300,6 +301,14 @@ export default function Workspace({ project, onClose }: Props) {
     if (e) openWorld({ kind: e.kind, file: e.file })
   }, [p]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  /** Ubah detail adegan mana pun (dipakai papan plot). */
+  async function updateSceneMeta(c: Chapter, s: Scene, patch: FrontMatter) {
+    if (sceneId(c, s) === activeIdRef.current) { changeMeta(patch); return }
+    Object.assign(s.meta, patch)
+    bump()
+    try { await saveScene(p, c, s) } catch { setToast('Gagal menyimpan detail adegan.') }
+  }
+
   /** Ubah detail adegan (front matter) lalu simpan otomatis. */
   function changeMeta(patch: FrontMatter) {
     const hit = find(activeIdRef.current)
@@ -395,7 +404,7 @@ export default function Workspace({ project, onClose }: Props) {
         <div className="ws-spacer" />
         <div className="ws-modes" role="group" aria-label="Mode kerja">
           <button className={mode === 'menulis' ? 'is-active' : ''} aria-pressed={mode === 'menulis'} onClick={() => setMode('menulis')}>Menulis</button>
-          <button disabled title="Hadir di fase berikutnya">Merencanakan</button>
+          <button className={mode === 'rencana' ? 'is-active' : ''} aria-pressed={mode === 'rencana'} onClick={() => { flush(); setFocusMode(false); setMode('rencana') }}>Merencanakan</button>
           <button className={mode === 'dunia' ? 'is-active' : ''} aria-pressed={mode === 'dunia'} onClick={() => openWorld({ kind: worldTarget.kind, file: undefined })}>Dunia</button>
         </div>
         <button className="ws-search" disabled title="Pencarian hadir di fase berikutnya">
@@ -445,6 +454,15 @@ export default function Workspace({ project, onClose }: Props) {
         <main className="ws-main">
           {mode === 'dunia' ? (
             <World project={p} target={worldTarget} onChanged={bump} registerNew={registerWorldNew} />
+          ) : mode === 'rencana' ? (
+            <Plan project={p} version={version} activeId={activeId}
+              openScene={(c, s) => { setMode('menulis'); openScene(c, s) }}
+              openSceneById={(id) => { const hit = find(id); if (hit) { setMode('menulis'); openScene(hit.chapter, hit.scene) } }}
+              openEntry={(id) => openEntry(id)}
+              addScene={(c) => change('menambah adegan', async () => { const s = await ops.addScene(p, c, `Adegan ${c.scenes.length + 1}`); expand(c); void s })}
+              moveScene={actions.moveScene}
+              updateMeta={updateSceneMeta}
+              onError={setToast} />
           ) : (<>
           <div className="ws-center">
             {active ? (
