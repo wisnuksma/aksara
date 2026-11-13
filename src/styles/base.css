@@ -53,3 +53,24 @@ kbd { font-family: inherit; }
 .btn-danger:hover:not(:disabled) { filter: brightness(1.08); background: var(--danger); }
 .confirm { max-width: 440px; }
 .confirm-msg { margin: 0; color: var(--text-2); line-height: 1.6; }
+
+/* ---------- Cetak / PDF ---------- */
+.print-root { display: none; }
+@media print {
+  @page { size: A4; margin: 2.5cm 2.2cm; }
+  html, body { height: auto; background: #fff !important; }
+  body > #root { display: none !important; }
+  .print-root { display: block; color: #000; font-family: var(--font-text); font-size: 11.5pt; line-height: 1.6; }
+  .pr-title { height: 22cm; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; break-after: page; }
+  .pr-title h1 { font-size: 30pt; margin: 0 0 12pt; }
+  .pr-title p { font-style: italic; margin: 0; }
+  .pr-chapter { break-before: page; }
+  .pr-title + .pr-chapter, .print-root > .pr-chapter:first-child { break-before: auto; }
+  .pr-chapter header { text-align: center; margin: 3cm 0 1.2cm; }
+  .pr-chapter header span { display: block; font-family: var(--font-ui); font-size: 9pt; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 6pt; }
+  .pr-chapter h2 { font-size: 20pt; margin: 0; }
+  .pr-chapter h3 { font-size: 13pt; margin: 18pt 0 8pt; }
+  .pr-scene p { margin: 0; text-indent: 1.2em; orphans: 2; widows: 2; }
+  .pr-scene p:first-child, .pr-sep + .pr-scene p:first-child, h3 + .pr-scene p:first-child { text-indent: 0; }
+  .pr-sep { text-align: center; margin: 14pt 0; text-indent: 0 !important; }
+}

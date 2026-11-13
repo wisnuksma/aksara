@@ -2,15 +2,18 @@
 import { exists, folderName, pad2, slugify, subdir, writeJson, writeText } from './fs'
 import { toFrontMatter } from './frontmatter'
 import type { ProjectFile, Template } from './types'
+import type { ImportedChapter } from './importer'
 
 export interface NewNovel {
   judul: string
   genre: string
   targetKata: number
   template: Template
+  /** Isi naskah hasil impor (menggantikan struktur template). */
+  imported?: ImportedChapter[]
 }
 
-interface ChapterSeed { judul: string; catatan: string; adegan: string[] }
+interface ChapterSeed { judul: string; catatan: string; adegan: string[]; isi?: string[] }
 
 const STRUKTUR: Record<Template, ChapterSeed[]> = {
   kosong: [{ judul: 'Bab 1', catatan: '', adegan: ['Adegan 1'] }],
@@ -39,7 +42,10 @@ export async function createProject(parent: FileSystemDirectoryHandle, n: NewNov
   const manuscript = await subdir(root, 'manuscript')
   const binder: ProjectFile['binder'] = []
 
-  for (const [i, bab] of STRUKTUR[n.template].entries()) {
+  const seeds: ChapterSeed[] = n.imported
+    ? n.imported.map((c) => ({ judul: c.judul, catatan: '', adegan: c.scenes.map((s) => s.judul), isi: c.scenes.map((s) => s.body) }))
+    : STRUKTUR[n.template]
+  for (const [i, bab] of seeds.entries()) {
     const babFolder = `${pad2(i + 1)}-${slugify(bab.judul)}`
     const dir = await subdir(manuscript, babFolder)
     await writeJson(dir, '_bab.json', { judul: bab.judul, catatan: bab.catatan })
@@ -48,8 +54,8 @@ export async function createProject(parent: FileSystemDirectoryHandle, n: NewNov
       const file = `${pad2(j + 1)}-${slugify(judul)}.md`
       await writeText(dir, file, toFrontMatter({
         id: crypto.randomUUID(),
-        judul, status: 'ide', pov: '', lokasi: '', waktu_cerita: '', alur: '', sinopsis: '', tokoh: [],
-      }))
+        judul, status: bab.isi?.[j] ? 'draf' : 'ide', pov: '', lokasi: '', waktu_cerita: '', alur: '', sinopsis: '', tokoh: [],
+      }, bab.isi?.[j] ? bab.isi[j] + '\n' : ''))
       files.push(file)
     }
     binder.push({ bab: babFolder, adegan: files })

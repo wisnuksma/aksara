@@ -7,6 +7,7 @@ import World, { type WorldTarget } from './World'
 import { bibleTerms, entryAliases, entryFaction, entryName, factionColor, findEntry, KIND_LABEL } from '../lib/bible'
 import type { EntryCard } from '../components/Editor'
 import SceneInspector from '../components/SceneInspector'
+import ExportDialog from '../components/ExportDialog'
 import type { FrontMatter } from '../lib/frontmatter'
 import * as ops from '../lib/binderOps'
 import { chapterLabel, nextChapterTitle, saveScene, sceneId, totalWords, type Chapter, type Project, type Scene } from '../lib/project'
@@ -48,6 +49,7 @@ export default function Workspace({ project, onClose }: Props) {
   const modeRef = useRef(mode)
   modeRef.current = mode
   const [targetOpen, setTargetOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -335,6 +337,10 @@ export default function Workspace({ project, onClose }: Props) {
           Cari…
           <kbd>⌘K</kbd>
         </button>
+        <button className="ws-export" onClick={() => setExportOpen(true)} title="Ekspor ke Word, PDF, atau Markdown">
+          <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 21h14" /></svg>
+          Ekspor
+        </button>
         <div className="ws-toggles">
           <button className={'ws-icon-btn' + (showLeft ? ' is-on' : '')} onClick={() => setShowLeft((v) => !v)}
             aria-pressed={showLeft} aria-label="Tampilkan binder" title="Tampilkan / sembunyikan binder">
@@ -467,6 +473,9 @@ export default function Workspace({ project, onClose }: Props) {
           <span aria-hidden="true">·</span>
           <button onClick={() => setFocusMode(false)}>Keluar mode fokus <kbd>Esc</kbd></button>
         </div>
+      )}
+      {exportOpen && (
+        <ExportDialog project={p} beforeExport={async () => { await flush() }} onClose={() => setExportOpen(false)} onDone={setToast} />
       )}
       {toast && <div className="toast" role="alert">{toast}</div>}
     </div>

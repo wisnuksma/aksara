@@ -47,6 +47,12 @@
 .ws-search:disabled { opacity: .55; }
 .ws-search kbd { font-size: 11px; background: var(--ink-line-2); color: #C9CBD8; border-radius: 4px; padding: 1px 6px; }
 .ws-toggles { display: flex; gap: 2px; }
+.ws-export {
+  height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 12px; cursor: pointer;
+  border: 1px solid var(--ink-line-2); border-radius: 9px; background: transparent; color: var(--ink-text-2); font: inherit;
+}
+.ws-export:hover { background: var(--ink-card); color: var(--ink-text); }
+.ws-export:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
 
 /* ---------- Badan ---------- */
 .ws-body { flex: 1; display: flex; min-height: 0; }

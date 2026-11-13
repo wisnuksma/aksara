@@ -7,6 +7,7 @@ import { loadProject, NotAProjectError, PermissionError, totalWords, type Projec
 import { fsSupported } from './lib/fs'
 import type { Template } from './lib/types'
 import { usePwa } from './lib/pwa'
+import { parseManuscript, pickManuscriptFile, type ImportedManuscript } from './lib/importer'
 
 export default function App() {
   const [recent, setRecent] = useState<RecentProject[]>([])
@@ -15,6 +16,7 @@ export default function App() {
   const [newDialog, setNewDialog] = useState<Template | null>(null)
   const [project, setProject] = useState<Project | null>(null)
   const [busy, setBusy] = useState(false)
+  const [imported, setImported] = useState<ImportedManuscript | null>(null)
   const pwa = usePwa()
 
   const refreshRecent = useCallback(() => {
@@ -59,8 +61,19 @@ export default function App() {
       if ((e as DOMException).name !== 'AbortError') setToast('Folder tidak bisa dibuka.')
     }
   }, [openFolder])
-  const handleImport = useCallback(() => {
-    setToast('Impor naskah (.docx / Markdown) termasuk Fase 2.')
+  const handleImport = useCallback(async () => {
+    try {
+      const file = await pickManuscriptFile()
+      if (!file) return
+      setToast('Membaca naskah…')
+      const m = await parseManuscript(file)
+      setToast(null)
+      setImported(m)
+      setNewDialog('kosong')
+    } catch (e) {
+      console.error(e)
+      setToast('File ini tidak bisa dibaca. Pastikan formatnya .docx atau .md.')
+    }
   }, [])
   const handleOpenRecent = useCallback((r: RecentProject) => {
     if (r.handle) openFolder(r.handle)
@@ -125,9 +138,11 @@ export default function App() {
         <NewNovelDialog
           key={newDialog}
           initialTemplate={newDialog}
-          onCancel={() => setNewDialog(null)}
+          imported={imported ?? undefined}
+          onCancel={() => { setNewDialog(null); setImported(null) }}
           onCreated={async ({ root }) => {
             setNewDialog(null)
+            setImported(null)
             await openFolder(root)
           }}
         />

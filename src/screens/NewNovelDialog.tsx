@@ -3,6 +3,7 @@ import { get, set } from 'idb-keyval'
 import { createProject, FolderExistsError } from '../lib/createProject'
 import { ensurePermission, folderName, fsSupported } from '../lib/fs'
 import type { ProjectFile, Template } from '../lib/types'
+import type { ImportedManuscript } from '../lib/importer'
 import Select from '../components/Select'
 import './dialog.css'
 
@@ -18,6 +19,8 @@ const PARENT_KEY = 'parent-folder'
 
 interface Props {
   initialTemplate?: Template
+  /** Naskah hasil impor: struktur awal diganti ringkasan impor. */
+  imported?: ImportedManuscript
   onCancel: () => void
   onCreated: (r: { root: FileSystemDirectoryHandle; project: ProjectFile; folder: string; parent: string }) => void
 }
@@ -29,8 +32,8 @@ const formatTyping = (s: string) => {
   return n ? new Intl.NumberFormat('id-ID').format(n) : ''
 }
 
-export default function NewNovelDialog({ initialTemplate = 'kosong', onCancel, onCreated }: Props) {
-  const [judul, setJudul] = useState('')
+export default function NewNovelDialog({ initialTemplate = 'kosong', imported, onCancel, onCreated }: Props) {
+  const [judul, setJudul] = useState(imported?.title ?? '')
   const [genre, setGenre] = useState('Fantasi')
   const [target, setTarget] = useState('')
   const [template, setTemplate] = useState<Template>(initialTemplate)
@@ -84,6 +87,7 @@ export default function NewNovelDialog({ initialTemplate = 'kosong', onCancel, o
         genre,
         targetKata: parseNumber(target),
         template,
+        imported: imported?.chapters,
       })
       onCreated({ ...r, parent: dir.name })
     } catch (err) {
@@ -104,8 +108,8 @@ export default function NewNovelDialog({ initialTemplate = 'kosong', onCancel, o
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && !busy && onCancel()}>
       <form className="dialog" role="dialog" aria-modal="true" aria-labelledby="nn-title" onSubmit={submit}>
         <div className="dialog-head">
-          <h1 id="nn-title">Novel baru</h1>
-          <p>Semua bisa diubah nanti. Isi seadanya dulu.</p>
+          <h1 id="nn-title">{imported ? 'Impor naskah' : 'Novel baru'}</h1>
+          <p>{imported ? 'Naskah akan dijadikan novel baru di folder pilihan Anda. File aslinya tidak diubah.' : 'Semua bisa diubah nanti. Isi seadanya dulu.'}</p>
         </div>
 
         <div className="dialog-body">
@@ -127,6 +131,19 @@ export default function NewNovelDialog({ initialTemplate = 'kosong', onCancel, o
             </label>
           </div>
 
+          {imported ? (
+            <div className="field">
+              <span className="field-label">Isi naskah</span>
+              <div className="import-summary">
+                <span className="import-file">{imported.fileName}</span>
+                <span>{imported.chapters.length} bab · {imported.chapters.reduce((n, c) => n + c.scenes.length, 0)} adegan · {new Intl.NumberFormat('id-ID').format(imported.words)} kata</span>
+                <ol className="import-list">
+                  {imported.chapters.slice(0, 6).map((c, i) => <li key={i}>{c.judul} <span>· {c.scenes.length} adegan</span></li>)}
+                  {imported.chapters.length > 6 && <li className="import-more">…dan {imported.chapters.length - 6} bab lagi</li>}
+                </ol>
+              </div>
+            </div>
+          ) : (
           <fieldset className="field">
             <legend className="field-label">Struktur awal</legend>
             <div className="choices">
@@ -141,6 +158,7 @@ export default function NewNovelDialog({ initialTemplate = 'kosong', onCancel, o
               ))}
             </div>
           </fieldset>
+          )}
 
           <div className="field">
             <span className="field-label">Disimpan di</span>
